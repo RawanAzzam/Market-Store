@@ -557,7 +557,7 @@ namespace Market_Store___First_Project.Controllers
 
 
         #region Product Store
-        public ActionResult ProductStore(int? storeId)
+        public ActionResult ProductStore(int? storeId ,int? productStoreId)
         {
 
 
@@ -568,6 +568,10 @@ namespace Market_Store___First_Project.Controllers
             if (storeId != null)
             {
                 productStore = productStore.Where(s => s.Storeid == storeId).ToList();
+            }
+            if(productStoreId != null)
+            {
+                productStore = productStore.Where(s => s.Id == productStoreId).ToList();
             }
            
 
@@ -591,12 +595,8 @@ namespace Market_Store___First_Project.Controllers
         }
 
 
-        private double getRate(decimal productId)
-        {
-            return _context.Rate.Where(r => r.ProductId == productId).Average(rate => (int)rate.RateNum);
-        }
-
-        #region Create Product Store
+        ///////////////////***************** Create Product Store
+          #region Create Product Store
         public IActionResult CreateProductStore()
         {
             ViewData["Productid"] = new SelectList(_context.Product, "Id", "Namee");
@@ -611,16 +611,229 @@ namespace Market_Store___First_Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(productStore);
+              var isFound = _context.ProductStore.Where(ps => ps.Storeid == productStore.Storeid
+                && ps.Productid == productStore.Productid).SingleOrDefault();
+                int id = (int)productStore.Storeid;
+                if (isFound == null)
+                {
+                    _context.Add(productStore);
+                }
+                else
+                {
+                    isFound.Count += productStore.Count;
+                    _context.ProductStore.Update(isFound);
+                }
+              
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(ProductStore));
+              
+                return RedirectToAction(nameof(ProductStore),new {storeId = id });
             }
             ViewData["Productid"] = new SelectList(_context.Product, "Id", "Namee", productStore.Productid);
-            ViewData["Storeid"] = new SelectList(_context.Store, "Id", "Storename", productStore.Storeid);
+            ViewData["Storeid"] = new SelectList(_context.Product, "Id", "Storename", productStore.Storeid);
             return View(productStore);
         }
         #endregion
+
+        ////////////////////**************** Delete Product Store
+        public async Task<IActionResult> DeleteProductStore(decimal? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var productStore = await _context.ProductStore
+                .Include(p => p.Product)
+                .Include(p => p.Store)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (productStore == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _context.ProductStore.Remove(productStore);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(ProductStore),new { storeId = productStore.Storeid});
+            }
+
+        }
+
+       
         #endregion
+
+        #region Product
+        public IActionResult Products()
+        {
+            var products = _context.Product.ToList();
+            var productCategory = _context.ProductCategory.ToList();
+
+            var multiTable = from p in products
+                             join pc in productCategory
+                             on p.ProductCategoryId equals pc.Id
+                             select new MultiTables
+                             {
+                                 product = p,
+                                 productCategory = pc
+                             };
+
+            var multiTableRate = new MultiTables();
+            foreach (var item in products)
+            {
+                multiTableRate.AddRate((int)item.Id, (int)getRate(item.Id));
+            }
+
+            return View(Tuple.Create<IEnumerable<MultiTables>, MultiTables>(multiTable, multiTableRate));
+
+        }
+
+        ////////////******************************* Add New Product
+        #region Create Product
+        public IActionResult CreateProduct()
+        {
+            ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategory, "Id", "Name");
+            return View();
+        }
+
+       
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateProduct([Bind("Namee,Sale,Price,ImageFile,ProductCategoryId")] Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                if (product.ImageFile != null)
+                {
+                    string wwwRootPath = _webHostEnviroment.WebRootPath;
+                    string fileName = Guid.NewGuid().ToString() + "_" +
+                    product.ImageFile.FileName;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await product.ImageFile.CopyToAsync(fileStream);
+                    }
+                    product.ImagePath = fileName;
+                }
+                product.DateOfAdd = DateTime.Now;
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Products));
+            }
+            ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategory, "Id", "Name", product.ProductCategoryId);
+            return View();
+        }
+        #endregion
+
+        /////////////////////////*********************** Edit Product
+        #region Edit Product
+        public async Task<IActionResult> EditProduct(decimal? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategory, "Id", "Name", product.ProductCategoryId);
+            return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProduct(decimal id, [Bind("Id,Namee,Sale,Price,ImagePath,ImageFile,ProductCategoryId,DateOfAdd")] Product product)
+        {
+            if (id != product.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (product.ImageFile != null)
+                    {
+                        string wwwRootPath = _webHostEnviroment.WebRootPath;
+                        string fileName = Guid.NewGuid().ToString() + "_" +
+                        product.ImageFile.FileName;
+                        string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await product.ImageFile.CopyToAsync(fileStream);
+                        }
+                        product.ImagePath = fileName;
+                    }
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductExists(product.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Products));
+            }
+            ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategory, "Id", "Name", product.ProductCategoryId);
+            return View(product);
+        }
+
+        #endregion
+
+        ///////////////////////////********************* Delete Product
+        #region Delete Product
+        public async Task<IActionResult> DeleteProduct(decimal? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Product
+                .Include(p => p.ProductCategory)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Products));
+            }
+
+        }
+
+       #endregion
+
+        //////////////////******************** getRateOfProduct
+        private double getRate(decimal productId)
+        {
+            if (_context.Rate.Where(r => r.ProductId == productId).Count() == 0)
+                return 0.0;
+
+            return _context.Rate.Where(r => r.ProductId == productId).Average(rate => (int)rate.RateNum);
+        }
+
+        ///////////////////////**************** check if product Exsit 
+        private bool ProductExists(decimal id)
+        {
+            return _context.Product.Any(e => e.Id == id);
+        }
+
+        #endregion
+
+
     }
 
 }
