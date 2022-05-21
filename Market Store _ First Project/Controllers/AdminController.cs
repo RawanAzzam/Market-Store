@@ -16,7 +16,7 @@ namespace Market_Store___First_Project.Controllers
     {
         private readonly ModelContext _context;
         private readonly IWebHostEnvironment _webHostEnviroment;
-
+        private Report report = new Report();
         public AdminController(ModelContext context, IWebHostEnvironment webHostEnviroment)
         {
             _context = context;
@@ -25,6 +25,8 @@ namespace Market_Store___First_Project.Controllers
         // GET: AnminController
         public ActionResult Index()
         {
+            ViewBag.UserRegistered = report.GetRegisteredUsers();
+            report.GetTotalSales(4);
             return View();
         }
 

@@ -17,7 +17,8 @@ namespace Market_Store___First_Project.Models
         public ProductStore productStore;
 
         public ProductCategory productCategory;
-
+        public Userorder userorder;
+        public Productorder productorder;
         public Dictionary<int, int> productRate = new Dictionary<int, int>();
 
         public void AddRate(int productId , int rate)
