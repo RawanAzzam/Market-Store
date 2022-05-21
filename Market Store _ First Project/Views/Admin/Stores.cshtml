@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Market_Store___First_Project.Models.MultiTables>
+
+@{ ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/AdminLayout.cshtml"; }
+
+<h1 class="pt-4 text-center">Manage Store</h1>
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-9">
+            <div class="bg-light text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h4 class="mb-0 text-center"><a asp-action="CreateStore"> Add Store</a></h4>
+                </div>
+                <div class="row row-cols-1 row-cols-md-3 g-4 p-2">
+                    @foreach (var item in Model)
+                    {
+                    <div class="card border-4 m-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <img class="rounded-circle" src="~/Images/@item.store.StoreLogo" alt="" style="width: 80px; height: 80px;">
+                            <br /> <br />
+                            <h4 class="card-title">@item.store.Storename</h4>
+                            <h5 class="card-subtitle mb-2 text-muted">@item.category.CategoryName</h5>
+                            <div class="row">
+                                <h6 class="col">Store Id:</h6>
+                                <strong class="card-text col">@item.store.Id</strong>
+                            </div>
+                            <div class="row">
+                                <h6 class="col">Owner Name:</h6>
+                                <strong class="card-text col">@item.store.Ownername</strong>
+                            </div>
+                            <div class="row">
+                                <h6 class="col">Loaction:</h6>
+                                <strong class="card-text col">@item.store.Storelocation</strong>
+                            </div>
+                            <br />
+                            <a asp-action="EditStore" asp-route-id="@item.store.Id" class="btn btn-primary">Edit</a> |
+                            <a asp-action="DeleteStore" asp-route-id="@item.store.Id" class="btn btn-primary">Delete</a>
+                        </div>
+                    </div>
+
+                    }
+
+                </div>
+
+               
+
+            </div>
+        </div>
+        <div class="col-sm-12 col-xl-3">
+            <div class="bg-light text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">Fliter By :</h6>
+
+                </div>
+                <form asp-action="Users">
+                    <input class="form-control  m-2" name="userName" type="text" placeholder="Enter Name">
+                    <input class="form-control  m-2" name="email" type="text" placeholder="Enter Email">
+                    <input class="form-control  m-2" name="userId" type="number" placeholder="Enter User Id">
+                    <input class="form-control m-2" name="location" type="text" placeholder="Enter Location">
+                    <input class="form-control m-2" name="roleName" type="text" placeholder="Enter Role Name">
+                    <button type="submit" class="btn btn-primary ml-3">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+<script>$(document).ready(function () {
+        $('.table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copyHtml5',
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ]
+        });
+    });</script>
+

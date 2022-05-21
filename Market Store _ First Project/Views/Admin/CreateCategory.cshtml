@@ -1,0 +1,33 @@
+﻿
+@{ ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/AdminLayout.cshtml"; }
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Create Category</h6>
+        <form asp-action="CreateCategory" method="post" enctype="multipart/form-data">
+
+
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">Category Name</label>
+                <div class="col-sm-10">
+                    <input type="text" name="CategoryName" class="form-control" id="inputname">
+                </div>
+            </div>
+          
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Image File</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" name="ImageFile" id="photo">
+                </div>
+            </div>
+           
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+
+</div>
+
+
+
+

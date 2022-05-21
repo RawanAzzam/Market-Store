@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Market_Store___First_Project.Models.Role>
+@{ ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/AdminLayout.cshtml"; }
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Create User</h6>
+        <form asp-action="CreateUser" method="post" enctype="multipart/form-data">
+
+
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">User Name</label>
+                <div class="col-sm-10">
+                    <input type="text" name="Username" class="form-control" id="inputname">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" name="Email" class="form-control" id="inputEmail3">
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <label for="inputLoc" class="col-sm-2 col-form-label">Location</label>
+                <div class="col-sm-10">
+                    <input type="text" name="Location" class="form-control" id="inputLoc">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Image File</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" name="ImageFile" id="photo">
+                </div>
+                </div>
+                <div class="row mb-3">
+
+                    <div class="row mb-3">
+                        <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" name="password" class="form-control" id="inputPassword3">
+                        </div>
+                    </div>
+
+                </div>
+                <fieldset class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
+                    <div class="col-sm-10">
+                        @foreach (var role in Model)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="roleId"
+                                       id="@role.Id" value="@role.Id">
+                                <label class="form-check-label" for="@role.Id">
+                                    @role.Rolename
+                                </label>
+                            </div>
+
+                        }
+
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+
+</div>
+
+
+
+

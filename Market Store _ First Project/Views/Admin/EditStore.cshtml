@@ -1,0 +1,57 @@
+﻿@model Market_Store___First_Project.Models.Store
+@{ ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Create User</h6>
+        <form asp-action="EditStore" method="post" enctype="multipart/form-data">
+
+            <input hidden name="Id" value="@Model.Id" />
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">Store Name</label>
+                <div class="col-sm-10">
+                    <input type="text" name="Storename" value="@Model.Storename" class="form-control" id="inputname">
+                </div>
+            </div>
+            <input hidden name="StoreLogo" value="@Model.StoreLogo" />
+            <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Store Logo</label>
+                <div class="col-sm-10">
+                    <input type="file" name="LogoFile" class="form-control" id="inputEmail3">
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <label for="inputLoc" class="col-sm-2 col-form-label">Store Location</label>
+                <div class="col-sm-10">
+                    <input type="text" name="Storelocation" value="@Model.Storelocation" class="form-control" id="inputLoc">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="inputLoc" class="col-sm-2 col-form-label">Owner Name</label>
+                <div class="col-sm-10">
+                    <input type="text" name="Ownername" value="@Model.Ownername" class="form-control" id="inputLoc">
+                </div>
+            </div>
+
+
+            <input hidden name="Categoryid" value="@Model.Categoryid" />
+            <div class="row mb-3">
+                <label for="inputLoc" class="col-sm-2 col-form-label">Category Name</label>
+                <div class="col-sm-10">
+                    <select name="Categoryid" class="form-select mb-3 w-50" asp-items="ViewBag.Categoryid">
+                    </select>
+                </div>
+            </div>
+
+
+
+            <button type="submit" class="btn btn-primary">Edit</button>
+        </form>
+    </div>
+
+</div>
