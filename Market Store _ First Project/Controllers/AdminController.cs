@@ -556,22 +556,20 @@ namespace Market_Store___First_Project.Controllers
         #endregion
 
 
-        #region Product
-        public ActionResult Products(int? storeId)
+        #region Product Store
+        public ActionResult ProductStore(int? storeId)
         {
 
 
             var productStore = _context.ProductStore.ToList();
             var stores = _context.Store.ToList();
             var products = _context.Product.ToList();
-            //if (categoryName != null)
-            //{
-            //    stores = stores.Where(s => s.Category.CategoryName == categoryName).ToList();
-            //}
-            //if (categoryId != null)
-            //{
-            //    stores = stores.Where(s => s.Category.Id == categoryId).ToList();
-            //}
+
+            if (storeId != null)
+            {
+                productStore = productStore.Where(s => s.Storeid == storeId).ToList();
+            }
+           
 
             var multiTable = from ps in productStore
                              join s in stores on ps.Storeid equals s.Id
@@ -582,19 +580,20 @@ namespace Market_Store___First_Project.Controllers
                                  store = s,
                                  productStore = ps
                              };
-            int rate = 0;
+
+            var multiTableRate = new MultiTables();
             foreach(var item in products)
             {
-                rate = getRate(item.Id);
+                multiTableRate.AddRate((int)item.Id, (int)getRate(item.Id));
             }
            
-            return View(multiTable);
+            return View(Tuple.Create<IEnumerable<MultiTables>,MultiTables>(multiTable,multiTableRate));
         }
 
 
-        private int getRate(decimal productId)
+        private double getRate(decimal productId)
         {
-            return _context.Rate.Where(r => r.ProductId == productId).Sum(rate => int.Parse(rate.RateNum.ToString()));
+            return _context.Rate.Where(r => r.ProductId == productId).Average(rate => (int)rate.RateNum);
         }
 
         #region Create Product Store
@@ -614,7 +613,7 @@ namespace Market_Store___First_Project.Controllers
             {
                 _context.Add(productStore);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Products));
+                return RedirectToAction(nameof(ProductStore));
             }
             ViewData["Productid"] = new SelectList(_context.Product, "Id", "Namee", productStore.Productid);
             ViewData["Storeid"] = new SelectList(_context.Store, "Id", "Storename", productStore.Storeid);

@@ -1,5 +1,4 @@
-﻿@model IEnumerable<Market_Store___First_Project.Models.MultiTables>
-
+﻿@model Market_Store___First_Project.Models.MultiTables
 @{ ViewData["Title"] = "Users";
     Layout = "~/Views/Shared/AdminLayout.cshtml"; }
 
@@ -7,37 +6,40 @@
 <section style="background-color: #eee;">
     <div class="container py-5">
         <div class="row">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Item1)
             {
-                <div class="col-md-12 col-lg-3 mb-4 mb-lg-0">
-                    <div class="card">
-                        <div class="d-flex justify-content-between p-3">
-                            <img class="bg-info rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
-                                 style="width: 35px; height: 35px;" src="~/Images/@item.store.StoreLogo" />
-                            <p class="lead mb-0">@item.store.Storename</p>
+            <div class="col-md-12 col-lg-3 mb-4 mb-lg-0">
+                <div class="card">
+                    <div class="d-flex justify-content-between p-3">
+                        <img class="bg-info rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
+                             style="width: 35px; height: 35px;" src="~/Images/@item.store.StoreLogo" />
+                        <p class="lead mb-0">@item.store.Storename</p>
+                    </div>
+                    <img src="~/Images/@item.product.ImagePath"
+                         class="card-img-top" alt="Laptop" />
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5 class="mb-0">@item.product.Namee</h5>
+                            <h5 class="text-dark mb-0">$@item.product.Sale</h5>
                         </div>
-                        <img src="~/Images/@item.product.ImagePath"
-                             class="card-img-top" alt="Laptop" />
-                        <div class="card-body">
-                                <div class="d-flex justify-content-between mb-3">
-                                <h5 class="mb-0">@item.product.Namee</h5>
-                                <h5 class="text-dark mb-0">$@item.product.Sale</h5>
-                            </div>
 
-                            <div class="d-flex justify-content-between mb-2">
-                                <p class="text-muted mb-0">Available: <span class="fw-bold">@item.productStore.Count</span></p>
+                        <div class="d-flex justify-content-between mb-2">
+                            <p class="text-muted mb-0">Available: <span class="fw-bold">@item.productStore.Count</span></p>
 
-                                 <div class="ms-auto text-warning">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                </div>
+                            <div class="ms-auto text-warning">
+                                @for (int i = 0; i < Model.Item2.productRate[(int)item.product.Id]; i++)
+                                    {
+                                <i class="fa fa-star "></i>}
+                                @for (int i = 0; i < (5 - Model.Item2.productRate[(int)item.product.Id]); i++)
+                                    {
+                                <i class="fa fa-star fa-w"></i>
+                                    }
+
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             }
 
 

@@ -318,7 +318,9 @@ namespace Market_Store___First_Project.Models
                     .HasColumnName("PRODUCT_ID")
                     .HasColumnType("NUMBER");
 
-                entity.Property(e => e.RateNum).HasColumnName("RATE_NUM");
+                entity.Property(e => e.RateNum)
+                    .HasColumnName("RATE_NUM")
+                    .HasColumnType("NUMBER(38)");
 
                 entity.Property(e => e.UserId)
                     .HasColumnName("USER_ID")

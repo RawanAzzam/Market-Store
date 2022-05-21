@@ -12,7 +12,7 @@ namespace Market_Store___First_Project.Models
         public decimal Id { get; set; }
         public decimal? UserId { get; set; }
         public decimal? ProductId { get; set; }
-        public bool? RateNum { get; set; }
+        public decimal? RateNum { get; set; }
         public string Feedback { get; set; }
 
         public virtual Product Product { get; set; }

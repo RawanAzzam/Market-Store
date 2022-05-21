@@ -8,7 +8,7 @@
 
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
-        <div class="col-sm-12 col-xl-9">
+        <div class="col-sm-12 col-xl-10">
             <div class="bg-light text-center rounded p-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h4 class="mb-0 text-center"><a asp-action="CreateStore"> Add Store</a></h4>
@@ -35,8 +35,14 @@
                                 <strong class="card-text col">@item.store.Storelocation</strong>
                             </div>
                             <br />
-                            <a asp-action="EditStore" asp-route-id="@item.store.Id" class="btn btn-primary">Edit</a> |
-                            <a asp-action="DeleteStore" asp-route-id="@item.store.Id" class="btn btn-primary">Delete</a>
+                            <div class="row">
+                                <a asp-action="EditStore" asp-route-id="@item.store.Id" class="btn btn-primary col m-2">Edit</a> 
+                                <a asp-action="DeleteStore" asp-route-id="@item.store.Id" class="btn btn-primary col  m-2">Delete</a>
+                            </div>
+                            <a asp-action="ProductStore" asp-route-storeId="@item.store.Id" class="btn btn-primary m-3">View Products</a>
+
+                            <br />
+
                         </div>
                     </div>
 
@@ -48,7 +54,7 @@
 
             </div>
         </div>
-        <div class="col-sm-12 col-xl-3">
+        <div class="col-sm-12 col-xl-2">
             <div class="bg-light text-center rounded p-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h6 class="mb-0">Fliter By :</h6>

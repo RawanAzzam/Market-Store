@@ -22,6 +22,7 @@ namespace Market_Store___First_Project.Models
         public decimal? Categoryid { get; set; }
         public string StoreLogo { get; set; }
         public decimal Id { get; set; }
+
         [NotMapped]
         public virtual IFormFile LogoFile { get; set; }
         public virtual Category Category { get; set; }

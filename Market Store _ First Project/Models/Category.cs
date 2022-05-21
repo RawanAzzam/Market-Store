@@ -19,9 +19,9 @@ namespace Market_Store___First_Project.Models
         public decimal Id { get; set; }
         public string CategoryName { get; set; }
         public string ImagePath { get; set; }
+
         [NotMapped]
         public virtual IFormFile ImageFile { get; set; }
-
         public virtual ICollection<Store> Store { get; set; }
     }
 }
