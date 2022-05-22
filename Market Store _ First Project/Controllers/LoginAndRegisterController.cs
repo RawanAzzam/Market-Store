@@ -87,15 +87,15 @@ namespace Market_Store___First_Project.Controllers
                     x.Passwordd == userLogin.Passwordd).SingleOrDefault();
                if (auth != null)
                 {
+                    var user = _context.Systemuser.Where(
+                               x => x.Id == auth.UserId).SingleOrDefault();
                     switch (auth.RoleId)
                     {
                         case 1:
-                            var user = _context.Systemuser.Where(
-                                x => x.Id == auth.UserId).SingleOrDefault();
-                            HttpContext.Session.SetString("UserName", user.Username);
+                            HttpContext.Session.SetInt32("UserId",(int) user.Id);
                             return RedirectToAction("Index", "Home");
                         case 2:
-                            HttpContext.Session.SetString("AdminName", auth.UserName);
+                            HttpContext.Session.SetInt32("AdminId",(int) user.Id);
                             return RedirectToAction("Index", "Admin");
                     }
                 }

@@ -19,11 +19,18 @@ namespace Market_Store___First_Project.Models
         public ProductCategory productCategory;
         public Userorder userorder;
         public Productorder productorder;
+
         public Dictionary<int, int> productRate = new Dictionary<int, int>();
+        public Dictionary<int, bool> orderIsLoss = new Dictionary<int, bool>();
 
         public void AddRate(int productId , int rate)
         {
             productRate.Add(productId, rate);
+        }
+
+        public void AddOrderloss(int orderId, bool loss)
+        {
+            orderIsLoss.Add(orderId, loss);
         }
 
     }

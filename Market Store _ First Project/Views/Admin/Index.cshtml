@@ -1,7 +1,5 @@
-﻿
-@{
-    Layout = "~/views/shared/AdminLayout.cshtml";
-}
+﻿@model Tuple<IEnumerable<MultiTables>, MultiTables>
+@{ Layout = "~/views/shared/AdminLayout.cshtml"; }
 
 <!-- Sale & Revenue Start -->
 <div class="container-fluid pt-4 px-4">
@@ -19,8 +17,8 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-bar fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Total Sale</p>
-                    <h6 class="mb-0">$1234</h6>
+                    <p class="mb-2">Today Sale</p>
+                    <h6 class="mb-0">@ViewBag.TodaySale</h6>
                 </div>
             </div>
         </div>
@@ -28,8 +26,8 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-area fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Today Revenue</p>
-                    <h6 class="mb-0">$1234</h6>
+                    <p class="mb-2">Monthly Sale</p>
+                    <h6 class="mb-0">@ViewBag.MontlySale</h6>
                 </div>
             </div>
         </div>
@@ -37,8 +35,8 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-pie fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Total Revenue</p>
-                    <h6 class="mb-0">$1234</h6>
+                    <p class="mb-2">Total Store</p>
+                    <h6 class="mb-0">@ViewBag.TotalStore</h6>
                 </div>
             </div>
         </div>
@@ -74,67 +72,54 @@
     <div class="bg-light text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h6 class="mb-0">Recent Salse</h6>
+            <form asp-action="Index" method="post" class="d-flex align-items-center justify-content-between w-75">
+                DateFrom  <input class="form-control w-50" name="dateFrom" type="date" placeholder="Enter Name">
+                DateTo <input class="form-control w-50" name="dateTo" type="date" placeholder="Enter Email">
+                <button type="submit" class="btn btn-primary ml-3">Search</button>
+
+            </form>
+
             <a href="">Show All</a>
         </div>
         <div class="table-responsive">
-            <table class="table text-start align-middle table-bordered table-hover mb-0">
+            <table id="T" class="table text-start align-middle table-bordered table-hover mb-0">
                 <thead>
                     <tr class="text-dark">
-                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col">Order Id</th>
                         <th scope="col">Date</th>
-                        <th scope="col">Invoice</th>
+                        <th scope="col">Customer Id</th>
                         <th scope="col">Customer</th>
                         <th scope="col">Amount</th>
                         <th scope="col">Status</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Finacal</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach (var item in Model.Item1)
+                    {
                     <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Ali Alomari</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Ali Alomari</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Ali Alomari</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Ali Alomari</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Ali Alomari</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
+                        <td>@item.userorder.Id</td>
+                        <td>@item.userorder.Dateoforder</td>
+                        <td>@item.systemuser.Id</td>
+                        <td>@item.systemuser.Username</td>
+                        <td>@item.userorder.Cost</td>
+                        @if ((bool)item.userorder.IsCheckout)
+                        {
+                    <td> Check out</td>}
+                        @if (!(bool)item.userorder.IsCheckout)
+                        {
+                    <td> Not Check out</td>}
+                        @if (!(bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
+                        {
+                    <td> Profits </td>}
+                        @if ((bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
+                        {
+                    <td> Loss </td>}
+
+
+                    </tr>}
+
+
                 </tbody>
             </table>
         </div>
@@ -260,4 +245,10 @@
         </div>
     </div>
 </div>
+
+
 <!-- Widgets End -->
+
+
+
+

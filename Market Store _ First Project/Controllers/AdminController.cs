@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Rotativa;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,20 +17,112 @@ namespace Market_Store___First_Project.Controllers
     {
         private readonly ModelContext _context;
         private readonly IWebHostEnvironment _webHostEnviroment;
-        private Report report = new Report();
+        private readonly Report report = new Report();
+        private readonly static int id;
         public AdminController(ModelContext context, IWebHostEnvironment webHostEnviroment)
         {
             _context = context;
             _webHostEnviroment = webHostEnviroment;
         }
+
         // GET: AnminController
-        public ActionResult Index()
+        public ActionResult Index(DateTime? dateFrom , DateTime? dateTo)
         {
-            ViewBag.UserRegistered = report.GetRegisteredUsers();
-            report.GetTotalSales(4);
-            return View();
+           
+            if (true)
+            {
+                int id = 44;
+
+                var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
+                ViewBag.userName = user.Username;
+                ViewBag.ImageFile = user.ImagePath;
+
+                var users = _context.Systemuser.ToList();
+                var orders = _context.Userorder.ToList();
+
+                if (dateFrom != null && dateTo != null)
+                {
+                    orders = orders.Where(o => o.Dateoforder.Value.Date >= dateFrom.Value.Date
+                                          && o.Dateoforder <= dateTo.Value.Date).ToList();
+                }
+
+                var multiTables = from user1 in users
+                                  join order in orders
+                                  on user1.Id equals order.Userid
+                                  select new MultiTables
+                                  {
+                                      systemuser = user1,
+                                      userorder = order
+                                  };
+
+                var multiTableLoss = new MultiTables();
+                foreach (var order in orders)
+                {
+                    multiTableLoss.AddOrderloss((int)order.Id, report.IsLoss((int)order.Id));
+                }
+
+                ViewBag.UserRegistered = report.GetRegisteredUsers();
+                ViewBag.TodaySale = report.GetTodaySale();
+                ViewBag.MontlySale = report.GetMontlySale();
+                ViewBag.TotalStore = report.GetTotalStore();
+                return View(Tuple.Create<IEnumerable<MultiTables>, MultiTables>(multiTables, multiTableLoss));
+
+            }
+            return RedirectToAction("Login", "LoginAndRegister");
         }
 
+        public IActionResult AdminProfile()
+        {
+            int id =44;
+            var profileInfo = _context.Systemuser.Where(user => user.Id == id).SingleOrDefault();
+            var adminLogin = _context.UserLogin.Where(user => user.UserId == id).SingleOrDefault();
+
+            return View(Tuple.Create<Systemuser, UserLogin>(profileInfo, adminLogin));
+        }
+
+        public async Task<IActionResult>  EditProfile([Bind("Username,Email,Id,Location,ImagePath,ImageFile")] Systemuser systemuser)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (systemuser.ImageFile != null)
+                    {
+                        string wwwRootPath = _webHostEnviroment.WebRootPath;
+                        string fileName = Guid.NewGuid().ToString() + "_" +
+                        systemuser.ImageFile.FileName;
+                        string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await systemuser.ImageFile.CopyToAsync(fileStream);
+                        }
+                        systemuser.ImagePath = fileName;
+                    }
+                    var userLogin = await _context.UserLogin.Where(u => u.UserId == systemuser.Id)
+                        .SingleOrDefaultAsync();
+
+                    userLogin.UserName = systemuser.Email;
+
+                    _context.Update(systemuser);
+                    _context.Update(userLogin);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SystemuserExists(systemuser.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(AdminProfile));
+            }
+            return View();
+        }
+       
         #region User
 
         public IActionResult Users(string? userName, int? userId, string? location, string? roleName,
@@ -393,7 +486,6 @@ namespace Market_Store___First_Project.Controllers
         }
         #endregion
 
-
         #region Store
         public ActionResult Stores(string? categoryName , string? location , int? categoryId)
         {
@@ -557,7 +649,6 @@ namespace Market_Store___First_Project.Controllers
         }
         #endregion
 
-
         #region Product Store
         public ActionResult ProductStore(int? storeId ,int? productStoreId)
         {
@@ -570,6 +661,10 @@ namespace Market_Store___First_Project.Controllers
             if (storeId != null)
             {
                 productStore = productStore.Where(s => s.Storeid == storeId).ToList();
+                ViewBag.todaySale = report.GetToadySaleForStore((int)storeId);
+                ViewBag.monthlySale = report.GetMonthlySaleForStore((int) storeId);
+                ViewBag.totalSale = report.GetTotalSalesForStore((int)storeId);
+                ViewBag.totalProduct = report.GetTotalProductForStore((int)storeId);
             }
             if(productStoreId != null)
             {
@@ -834,8 +929,6 @@ namespace Market_Store___First_Project.Controllers
         }
 
         #endregion
-
-
     }
 
 }
