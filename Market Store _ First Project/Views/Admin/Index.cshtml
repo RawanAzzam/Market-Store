@@ -72,15 +72,16 @@
     <div class="bg-light text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h6 class="mb-0">Recent Salse</h6>
-            <form asp-action="Index" method="post" class="d-flex align-items-center justify-content-between w-75">
+            <form asp-action="GetOrderBySpecficDate" method="post" class="d-flex align-items-center justify-content-between w-75">
                 DateFrom  <input class="form-control w-50" name="dateFrom" type="date" placeholder="Enter Name">
                 DateTo <input class="form-control w-50" name="dateTo" type="date" placeholder="Enter Email">
                 <button type="submit" class="btn btn-primary ml-3">Search</button>
 
             </form>
 
-            <a href="">Show All</a>
+
         </div>
+
         <div class="table-responsive">
             <table id="T" class="table text-start align-middle table-bordered table-hover mb-0">
                 <thead>
@@ -97,31 +98,44 @@
                 <tbody>
                     @foreach (var item in Model.Item1)
                     {
-                    <tr>
-                        <td>@item.userorder.Id</td>
-                        <td>@item.userorder.Dateoforder</td>
-                        <td>@item.systemuser.Id</td>
-                        <td>@item.systemuser.Username</td>
-                        <td>@item.userorder.Cost</td>
-                        @if ((bool)item.userorder.IsCheckout)
-                        {
-                    <td> Check out</td>}
-                        @if (!(bool)item.userorder.IsCheckout)
-                        {
-                    <td> Not Check out</td>}
-                        @if (!(bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
-                        {
-                    <td> Profits </td>}
-                        @if ((bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
-                        {
-                    <td> Loss </td>}
+        <tr>
+            <td>@item.userorder.Id</td>
+            <td>@item.userorder.Dateoforder</td>
+            <td>@item.systemuser.Id</td>
+            <td>@item.systemuser.Username</td>
+            <td>@item.userorder.Cost</td>
+            @if ((bool)item.userorder.IsCheckout)
+            {
+    <td> Check out</td>}
+            @if (!(bool)item.userorder.IsCheckout)
+            {
+    <td> Not Check out</td>}
+            @if (!(bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
+            {
+    <td> Profits </td>}
+            @if ((bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
+            {
+    <td> Loss </td>}
 
 
-                    </tr>}
+        </tr>}
 
 
                 </tbody>
             </table>
+        </div>
+        <div class="d-flex align-items-center justify-content-lg-start mb-4">
+            <form asp-action="GetOrderBySpecficDate" method="post" calss="p-4">
+                <input hidden name="type" type="text" value="annule">
+                <button type="submit" class="btn btn-primary m-3">Annule Report</button>
+
+            </form>
+            <form asp-action="GetOrderBySpecficDate" method="post">
+                <input hidden name="type" type="text" value="monthly" >
+                <button  type="submit" class="btn btn-primary m-3 ">Monthly Report</button>
+
+            </form>
+
         </div>
     </div>
 </div>

@@ -1,0 +1,135 @@
+﻿@model Tuple<IEnumerable<Market_Store___First_Project.Models.MultiTables>,Userorder>
+@{ Layout = "~/views/shared/_HomeLayout.cshtml"; }
+
+<style>
+    body {
+        margin-top: 20px;
+        background: #eee;
+    }
+
+    .ui-w-40 {
+        width: 40px !important;
+        height: auto;
+    }
+
+    .card {
+        box-shadow: 0 1px 15px 1px rgba(52,40,104,.08);
+    }
+
+    .ui-product-color {
+        display: inline-block;
+        overflow: hidden;
+        margin: .144em;
+        width: .875rem;
+        height: .875rem;
+        border-radius: 10rem;
+        -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+        vertical-align: middle;
+    }
+
+</style>
+<div style="height:95px">
+
+
+</div>
+<div class="container px-3 my-5 clearfix">
+    <!-- Shopping cart table -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Shopping Cart</h2>
+        </div>
+        <div class="row">
+            <div class="p-5 col">
+                <div class="table-responsive">
+
+                    @if (Model.Item2 != null)
+                    {<table class="table table-bordered m-0">
+                            <thead>
+                                <tr>
+                                    <!-- Set columns width -->
+                                    <th scope="col" class="text-center py-3 px-4" style="min-width: 250px;">Product Name &amp; Details</th>
+                                    <th scope="col" class="text-right py-3 px-4" style="width: 100px;">Price</th>
+                                    <th scope="col" class="text-center py-3 px-4" style="width: 120px;">Quantity</th>
+                                    <th scope="col" class="text-right py-3 px-4" style="width: 100px;">Total</th>
+                                    <th scope="col" class="text-center align-middle py-3 px-0" style="width: 80px;"><a href="#" class="shop-tooltip float-none text-light" title="" data-original-title="Clear cart">remove</a></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Item1)
+                                {
+                <tr>
+                    <td class="p-4">
+                        <div class="media align-items-center">
+                            <img src="~/Images/@item.product.ImagePath" class="d-block ui-w-40 ui-bordered mr-4" alt="">
+                            <div class="media-body">
+                                <a href="#" class="d-block text-dark">@item.product.Namee</a>
+                                <small>
+                                    <span class="text-muted">Product Id:</span>
+                                    <span class="text-muted">@item.productStore.Id </span>
+                                </small>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-right font-weight-semibold align-middle p-4">@item.product.Sale</td>
+                    <td class="align-middle p-4"><input type="text" class="form-control text-center" value="@item.productorder.Quntity"></td>
+                    <td class="text-right font-weight-semibold align-middle p-4">@(@item.product.Sale * @item.productorder.Quntity)</td>
+                    <td class="text-center align-middle px-0">
+                        <a asp-action="DeletePrdouctFromOrder"
+                           asp-route-productId="@item.productStore.Id"
+                           class="shop-tooltip close float-none text-danger" title="" data-original-title="Remove">×</a>
+                    </td>
+                </tr>
+                                }
+
+
+
+                            </tbody>
+                        </table>
+                    }
+                                        @if (Model.Item1 == null)
+                                        {
+                        <h1>No Data</h1>}
+                                                    </div>
+                <!-- / Shopping cart table -->
+            </div>
+
+            <div class="col p-5" >
+                <div class="mt-4 mb-3">
+                    <label class="text-muted font-weight-normal">Promocode</label>
+                    <input type="text" placeholder="ABC" class="form-control">
+                </div>
+                <div class="d-flex flex-wrap justify-content-between align-items-center pb-4">
+
+                    <div class="d-flex">
+                        <div class="text-right  m-2">
+                            <label class="text-muted font-weight-normal m-0">Discount</label>
+                            <div class="text-large"><strong>$20</strong></div>
+                        </div>
+                        <div class="text-right  m-2">
+                            <label class="text-muted font-weight-normal m-0">Total price</label>
+
+                            @if (Model.Item2 != null)
+                            {<div class="text-large"><strong>@Model.Item2.Cost</strong></div>}
+                            @if (Model.Item2 == null)
+                            {<div class="text-large"><strong>_</strong></div>}
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="float-right">
+                    <a asp-action="ProductStore" type="button" class="btn btn-lg btn-default md-btn-flat mt-2 mr-3">
+                        Back to shopping
+                    </a>
+                    @if (Model.Item2 != null)
+                    {
+                        <a asp-action="CheckOut" asp-route-orderId="@Model.Item2.Id" type="button" class="btn btn-lg btn-primary mt-2">Checkout</a>
+                                    }
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>

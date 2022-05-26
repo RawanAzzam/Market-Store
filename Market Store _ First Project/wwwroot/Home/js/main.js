@@ -78,4 +78,94 @@
 })(jQuery);
 
 
+//////////////////// 1
+function myFunction1Over() {
+    var element = document.getElementById("1");
+    element.classList.remove("fa-w");
+}
+
+function myFunction1Out() {
+    var element = document.getElementById("1");
+    element.classList.add("fa-w");
+}
+
+///////////////////////////// 2
+function myFunction2Over() {
+    var element = document.getElementById("2");
+    element.classList.remove("fa-w");
+
+    myFunction1Over();
+
+}
+
+function myFunction2Out() {
+    var element = document.getElementById("2");
+    element.classList.add("fa-w");
+}
+
+///////////////////// 3
+function myFunction3Over() {
+    var element = document.getElementById("3");
+    element.classList.remove("fa-w");
+
+    myFunction1Over();
+    myFunction2Over();
+}
+
+function myFunction3Out() {
+    var element = document.getElementById("3");
+    element.classList.add("fa-w");
+}
+
+////////////////// 4
+function myFunction4Over() {
+    var element = document.getElementById("4");
+    element.classList.remove("fa-w");
+
+    myFunction1Over();
+    myFunction2Over();
+    myFunction3Over();
+}
+
+function myFunction4Out() {
+    var element = document.getElementById("4");
+    element.classList.add("fa-w");
+
+    
+}
+
+//////////////// 5
+function myFunction5Over() {
+    var element = document.getElementById("5");
+    element.classList.remove("fa-w");
+
+    myFunction1Over();
+    myFunction2Over();
+    myFunction3Over();
+    myFunction4Over();
+}
+
+function myFunction5Out() {
+    var element = document.getElementById("5");
+    element.classList.add("fa-w");
+}
+
+document.getElementById('1').addEventListener('mouseover', myFunction1Over);
+document.getElementById('1').addEventListener('mouseout',myFunction1Out);
+
+document.getElementById('2').addEventListener('mouseover', myFunction2Over);
+document.getElementById('2').addEventListener('mouseout', myFunction2Out);
+
+document.getElementById('3').addEventListener('mouseover', myFunction3Over);
+document.getElementById('3').addEventListener('mouseout', myFunction3Out);
+
+
+document.getElementById('4').addEventListener('mouseover', myFunction4Over);
+document.getElementById('4').addEventListener('mouseout', myFunction4Out);
+
+
+document.getElementById('5').addEventListener('mouseover', myFunction5Over);
+document.getElementById('5').addEventListener('mouseout', myFunction5Out);
+
+
 

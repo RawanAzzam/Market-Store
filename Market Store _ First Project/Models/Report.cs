@@ -167,6 +167,44 @@ namespace Market_Store___First_Project.Models
 
         }
 
+        public Tuple<IEnumerable<MultiTables>,MultiTables> GetOdresByPeroidOfTime(DateTime? dateFrom ,
+            DateTime? dateTo)
+        {
+            var users = _context.Systemuser.ToList();
+            var orders = _context.Userorder.ToList();
+
+            if (dateFrom != null && dateTo != null)
+            {
+                orders = orders.Where(o => o.Dateoforder.Value.Date >= dateFrom.Value.Date
+                                      && o.Dateoforder <= dateTo.Value.Date).ToList();
+            }
+            else if(dateFrom != null)
+            {
+                orders = orders.Where(o => o.Dateoforder.Value.Date >= dateFrom.Value.Date).ToList();
+            }
+            else if(dateTo != null)
+            {
+                orders = orders.Where(o => o.Dateoforder <= dateTo.Value.Date).ToList();
+            }
+
+            var multiTables = from user1 in users
+                              join order in orders
+                              on user1.Id equals order.Userid
+                              select new MultiTables
+                              {
+                                  systemuser = user1,
+                                  userorder = order
+                              };
+
+            var multiTableLoss = new MultiTables();
+            foreach (var order in orders)
+            {
+                multiTableLoss.AddOrderloss((int)order.Id, IsLoss((int)order.Id));
+            }
+
+            return Tuple.Create<IEnumerable<MultiTables>, MultiTables>(multiTables, multiTableLoss);
+
+        }
         public void GetTotalLose()
         {
             string totalReport = "";

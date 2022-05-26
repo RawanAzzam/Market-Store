@@ -25,50 +25,57 @@ namespace Market_Store___First_Project.Controllers
             _webHostEnviroment = webHostEnviroment;
         }
 
-        // GET: AnminController
-        public ActionResult Index(DateTime? dateFrom , DateTime? dateTo)
+        private void SetImage()
         {
-           
-            if (true)
+            if (HttpContext.Session.GetInt32("AdminId") != null)
             {
-                int id = 44;
+                int id = (int)HttpContext.Session.GetInt32("AdminId");
 
                 var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
+
                 ViewBag.userName = user.Username;
                 ViewBag.ImageFile = user.ImagePath;
+               }
+        }
+        // GET: AnminController
+        public ActionResult Index()
+        {
+           
+            if (HttpContext.Session.GetInt32("AdminId") != null)
+            {
+                int id = (int) HttpContext.Session.GetInt32("AdminId");
 
-                var users = _context.Systemuser.ToList();
-                var orders = _context.Userorder.ToList();
+                var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
 
-                if (dateFrom != null && dateTo != null)
-                {
-                    orders = orders.Where(o => o.Dateoforder.Value.Date >= dateFrom.Value.Date
-                                          && o.Dateoforder <= dateTo.Value.Date).ToList();
-                }
-
-                var multiTables = from user1 in users
-                                  join order in orders
-                                  on user1.Id equals order.Userid
-                                  select new MultiTables
-                                  {
-                                      systemuser = user1,
-                                      userorder = order
-                                  };
-
-                var multiTableLoss = new MultiTables();
-                foreach (var order in orders)
-                {
-                    multiTableLoss.AddOrderloss((int)order.Id, report.IsLoss((int)order.Id));
-                }
-
+                ViewBag.userName = user.Username;
+                ViewBag.ImageFile = user.ImagePath;
                 ViewBag.UserRegistered = report.GetRegisteredUsers();
                 ViewBag.TodaySale = report.GetTodaySale();
                 ViewBag.MontlySale = report.GetMontlySale();
                 ViewBag.TotalStore = report.GetTotalStore();
-                return View(Tuple.Create<IEnumerable<MultiTables>, MultiTables>(multiTables, multiTableLoss));
+
+                return View(report.GetOdresByPeroidOfTime(null,null));
 
             }
             return RedirectToAction("Login", "LoginAndRegister");
+        }
+
+        public ActionResult GetOrderBySpecficDate(DateTime? dateFrom, DateTime? dateTo,string? type)
+        {
+            if (type != null && type.Equals("annule"))
+            {
+                dateFrom = new DateTime(DateTime.Now.Year, 1, 1);
+                dateTo = new DateTime(DateTime.Now.Year, 12,31);
+                return View(nameof(Index), report.GetOdresByPeroidOfTime(dateFrom, dateTo));
+
+            }
+            else if (type != null &&  type.Equals("monthly"))
+            {
+                dateFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                dateTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month,28);
+                return View(nameof(Index), report.GetOdresByPeroidOfTime(dateFrom, dateTo));
+            }
+            return View(nameof(Index), report.GetOdresByPeroidOfTime(dateFrom, dateTo));
         }
 
         public IActionResult AdminProfile()
@@ -929,6 +936,13 @@ namespace Market_Store___First_Project.Controllers
         }
 
         #endregion
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            HttpContext.Session = null;
+            return RedirectToAction("Login","LoginAndRegister");
+        }
     }
 
 }

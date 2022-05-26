@@ -1,0 +1,145 @@
+﻿@model Tuple<ProductStore, Product, Store, double,IEnumerable<Rate>>
+@{ Layout = "~/views/shared/_HomeLayout.cshtml"; }
+
+<div style="height:150px"
+     
+     
+     ></div>
+
+<div class=" row container m-auto" style="max-width: 1377px;">
+    <div class="col-lg-5 border bg-white">
+        <div class="col-lg-12 p-3">
+            <img src="~/Images/@Model.Item3.StoreLogo" class="rounded-circle" style="width: 40px; height: 40px;">
+            <h3 class="mt-2 p-0">@Model.Item3.Storename</h3>
+        </div>
+        <div class="row m-0">
+            <div class="col-lg-4 left-side-product-box pb-3">
+                <img src="~/Images/@Model.Item2.ImagePath" class="border p-3">
+
+            </div>
+            <div class="col-lg-8">
+                <div class="right-side-pro-detail border p-3 m-0">
+                    <div class="row">
+
+                        <div class="col-lg-12 pt-2">
+                            <h5>@Model.Item2.Namee</h5>
+                            <p class="m-0 p-0 price-pro">Price : @Model.Item2.Sale</p>
+                            <br />
+                        </div>
+
+
+                        <div class="col-lg-12">
+                            <p class="tag-section"><strong>Category : </strong>@Model.Item2.ProductCategory.Name</p>
+                            <p class="tag-section"><strong>Avaliavble : </strong>@Model.Item1.Count</p>
+                        </div>
+
+                        <div class="ms-auto text-warning">
+                            @for (int i = 0; i < Model.Item4; i++)
+                            {
+                    <i class="fa fa-star "></i>}
+                            @for (int i = 0; i < (5 - Model.Item4); i++)
+                            {
+                    <i class="fa fa-star fa-w"></i>}
+
+                        </div>
+                        <div class="col-lg-12 mt-2">
+                            <h6>Quantity :</h6>
+                            <input type="number" class="form-control text-center w-100" value="1">
+                        </div>
+                        <div class="col-lg-12 mt-3">
+                            <div class="row">
+                                <div class="col-lg-6 pb-2">
+                                    <a href="#" class="btn btn-danger w-100">Add To Cart</a>
+                                </div>
+                                <div class="col-lg-6">
+                                    <a href="#" class="btn btn-success w-100">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 border bg-white">
+        <h3 class="p-2 m-4 text-center">Reviews Of User</h3>
+        <table class="table table-hover">
+
+
+            <tbody>
+                @foreach (var item in Model.Item5)
+                {
+    <tr>
+        <td>
+            <img class="rounded-circle" src="~/Images/@item.User.ImagePath" alt="" style="width: 40px; height: 40px;">
+        </td>
+        <td>@item.User.Username</td>
+        <td>
+            <div class="ms-auto text-warning">
+                @for (int i = 0; i < item.RateNum; i++)
+                {
+    <i class="fa fa-star "></i>}
+                @for (int i = 0; i < (5 - item.RateNum); i++)
+                {
+    <i class="fa fa-star fa-w"></i>}
+
+            </div>
+        </td>
+        <td>@item.Feedback</td>
+
+
+    </tr>
+}
+
+            </tbody>
+        </table>
+        
+    </div>
+
+    <div class="col-lg-3 border bg-white">
+        <div>
+            <div class="ms-auto text-warning">
+               <h3 class="mt-3 text-center">Your Review</h3>
+               <form asp-action="AddRate">
+                   <input name="productId" value="@Model.Item2.Id" hidden />
+                   <input name="productStoreId" value="@Model.Item1.Id" hidden />
+                   <div class="col-sm-10">
+                       <textarea name="feedback" class="form-control"></textarea>
+                   </div>
+                   <br />
+                   <div class="col-sm-10">
+                       <select name="rate" class="form-select mb-3 w-50">
+                           <option value="1"> 1 </option>
+                           <option value="2"> 2 </option>
+                           <option value="3"> 3 </option>
+                           <option value="4"> 4 </option>
+                           <option value="5"> 5</option>
+
+                       </select>
+                   </div>
+                   <div class="col-lg-6">
+                       <button type="submit" class="btn btn-success w-100">Shop Now</button>
+                   </div>
+               </form>
+                @*<a asp-action="AddRate" asp-route-rate="1">
+                   
+                </a>
+                <a asp-action="AddRate" asp-route-rate="2">
+                    <i id="2" class="fa fa-star fa-w"></i>
+                </a>
+                <a asp-action="AddRate" asp-route-rate="3">
+                    <i id="3" class="fa fa-star fa-w"></i>
+                </a>
+                <a asp-action="AddRate" asp-route-rate="4">
+                    <i id="4" class="fa fa-star fa-w"></i>
+                </a>
+                <a asp-action="AddRate" asp-route-rate="5">
+                    <i id="5" class="fa fa-star fa-w"></i>
+                </a>*@
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+
