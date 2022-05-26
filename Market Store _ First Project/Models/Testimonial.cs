@@ -9,12 +9,11 @@ namespace Market_Store___First_Project.Models
 {
     public partial class Testimonial
     {
-        public string Username { get; set; }
-        public string Imagepath { get; set; }
         public string Content { get; set; }
         public decimal? Rate { get; set; }
         public decimal? Userid { get; set; }
         public decimal Id { get; set; }
+        public bool? Isverfiy { get; set; }
 
         public virtual Systemuser User { get; set; }
     }

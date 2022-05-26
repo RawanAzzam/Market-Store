@@ -7,14 +7,12 @@ using System.Collections.Generic;
 
 namespace Market_Store___First_Project.Models
 {
-    public partial class Report
+    public partial class Contactususer
     {
         public decimal Id { get; set; }
-        public string Mesaage { get; set; }
-        public decimal? Userid { get; set; }
-        public decimal? Storeid { get; set; }
-
-        public virtual Store Store { get; set; }
-        public virtual Systemuser User { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public decimal? Phonenumber { get; set; }
+        public string Message { get; set; }
     }
 }

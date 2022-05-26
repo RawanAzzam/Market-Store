@@ -23,12 +23,14 @@ namespace Market_Store___First_Project.Models
         public virtual DbSet<Card> Card { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Contactus> Contactus { get; set; }
+        public virtual DbSet<Contactususer> Contactususer { get; set; }
         public virtual DbSet<Home> Home { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductCategory> ProductCategory { get; set; }
         public virtual DbSet<ProductStore> ProductStore { get; set; }
         public virtual DbSet<Productorder> Productorder { get; set; }
         public virtual DbSet<Rate> Rate { get; set; }
+        public virtual DbSet<Report> Report { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Store> Store { get; set; }
         public virtual DbSet<Systemuser> Systemuser { get; set; }
@@ -131,34 +133,68 @@ namespace Market_Store___First_Project.Models
                     .HasColumnType("NUMBER");
             });
 
+            modelBuilder.Entity<Contactususer>(entity =>
+            {
+                entity.ToTable("CONTACTUSUSER");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasColumnType("NUMBER")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Email)
+                    .HasColumnName("EMAIL")
+                    .HasMaxLength(40)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Message)
+                    .HasColumnName("MESSAGE")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Phonenumber)
+                    .HasColumnName("PHONENUMBER")
+                    .HasColumnType("NUMBER");
+
+                entity.Property(e => e.Username)
+                    .HasColumnName("USERNAME")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Home>(entity =>
             {
                 entity.HasNoKey();
 
                 entity.ToTable("HOME");
 
-                entity.Property(e => e.Background)
-                    .HasColumnName("BACKGROUND")
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.Logoimage)
                     .HasColumnName("LOGOIMAGE")
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.OurFeatures)
-                    .HasColumnName("OUR_FEATURES")
+                entity.Property(e => e.OurFeatures1)
+                    .HasColumnName("OUR_FEATURES1")
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Skide2)
-                    .HasColumnName("SKIDE2")
+                entity.Property(e => e.OurFeatures2)
+                    .HasColumnName("OUR_FEATURES2")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OurFeatures3)
+                    .HasColumnName("OUR_FEATURES3")
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Slide1)
                     .HasColumnName("SLIDE1")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Slide2)
+                    .HasColumnName("SLIDE2")
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
@@ -339,6 +375,41 @@ namespace Market_Store___First_Project.Models
                     .HasConstraintName("RATE_FK1");
             });
 
+            modelBuilder.Entity<Report>(entity =>
+            {
+                entity.ToTable("REPORT");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasColumnType("NUMBER")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Mesaage)
+                    .HasColumnName("MESAAGE")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Storeid)
+                    .HasColumnName("STOREID")
+                    .HasColumnType("NUMBER");
+
+                entity.Property(e => e.Userid)
+                    .HasColumnName("USERID")
+                    .HasColumnType("NUMBER");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.Report)
+                    .HasForeignKey(d => d.Storeid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("REPORT_FK2");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Report)
+                    .HasForeignKey(d => d.Userid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("REPORT_FK1");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("ROLE");
@@ -442,10 +513,9 @@ namespace Market_Store___First_Project.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Imagepath)
-                    .HasColumnName("IMAGEPATH")
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Isverfiy)
+                    .HasColumnName("ISVERFIY")
+                    .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.Rate)
                     .HasColumnName("RATE")
@@ -454,11 +524,6 @@ namespace Market_Store___First_Project.Models
                 entity.Property(e => e.Userid)
                     .HasColumnName("USERID")
                     .HasColumnType("NUMBER");
-
-                entity.Property(e => e.Username)
-                    .HasColumnName("USERNAME")
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Testimonial)

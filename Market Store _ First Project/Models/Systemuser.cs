@@ -14,6 +14,7 @@ namespace Market_Store___First_Project.Models
         public Systemuser()
         {
             Rate = new HashSet<Rate>();
+            Report = new HashSet<Report>();
             Testimonial = new HashSet<Testimonial>();
             UserLogin = new HashSet<UserLogin>();
             Userorder = new HashSet<Userorder>();
@@ -24,10 +25,10 @@ namespace Market_Store___First_Project.Models
         public decimal Id { get; set; }
         public string Location { get; set; }
         public string ImagePath { get; set; }
-
         [NotMapped]
         public virtual IFormFile ImageFile { get; set; }
         public virtual ICollection<Rate> Rate { get; set; }
+        public virtual ICollection<Report> Report { get; set; }
         public virtual ICollection<Testimonial> Testimonial { get; set; }
         public virtual ICollection<UserLogin> UserLogin { get; set; }
         public virtual ICollection<Userorder> Userorder { get; set; }

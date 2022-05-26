@@ -22,12 +22,10 @@ namespace Market_Store___First_Project.Models
         public decimal? Sale { get; set; }
         public decimal? Price { get; set; }
         public string ImagePath { get; set; }
-
-        [NotMapped]
-        public virtual IFormFile ImageFile { get; set; }
         public decimal ProductCategoryId { get; set; }
         public DateTime? DateOfAdd { get; set; }
-
+        [NotMapped]
+        public virtual IFormFile ImageFile { get; set; }
         public virtual ProductCategory ProductCategory { get; set; }
         public virtual ICollection<ProductStore> ProductStore { get; set; }
         public virtual ICollection<Rate> Rate { get; set; }

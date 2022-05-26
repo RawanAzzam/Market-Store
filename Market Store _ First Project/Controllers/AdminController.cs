@@ -17,7 +17,7 @@ namespace Market_Store___First_Project.Controllers
     {
         private readonly ModelContext _context;
         private readonly IWebHostEnvironment _webHostEnviroment;
-        private readonly Report report = new Report();
+        private readonly AdminReport report = new AdminReport();
         private readonly static int id;
         public AdminController(ModelContext context, IWebHostEnvironment webHostEnviroment)
         {

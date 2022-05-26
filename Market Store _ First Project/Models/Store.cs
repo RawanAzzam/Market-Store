@@ -14,6 +14,7 @@ namespace Market_Store___First_Project.Models
         public Store()
         {
             ProductStore = new HashSet<ProductStore>();
+            Report = new HashSet<Report>();
         }
 
         public string Storename { get; set; }
@@ -27,5 +28,6 @@ namespace Market_Store___First_Project.Models
         public virtual IFormFile LogoFile { get; set; }
         public virtual Category Category { get; set; }
         public virtual ICollection<ProductStore> ProductStore { get; set; }
+        public virtual ICollection<Report> Report { get; set; }
     }
 }
