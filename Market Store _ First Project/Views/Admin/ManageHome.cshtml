@@ -1,0 +1,46 @@
+﻿@model Home
+@{ Layout = "~/views/shared/AdminLayout.cshtml"; }
+
+<div class="container py-5">
+    <form method="post" asp-action="ManageHome" enctype="multipart/form-data">
+        <div class="row">
+
+            <div class="col-lg-6 mx-auto">
+                <!-- Uploaded image area-->
+                <div class="image-area mt-4 label1">
+                    <img id="imageResult1" src="#" alt=""  class="img-fluid rounded shadow-sm mx-auto d-block">
+                    <input id="upload1" type="file" name="Slide1File"  onchange="readURL(this);" class="w-100">
+
+                </div>
+
+            </div>
+
+        </div>
+        <button type="submit">Ok</button>
+    </form>
+  
+
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <!-- Uploaded image area-->
+            <div class="image-area mt-4 label2">
+                <img id="imageResult2" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                <input id="upload2" type="file" onchange="readURL1(this);" class="w-100">
+
+            </div>
+
+        </div>
+       
+    </div>
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <!-- Uploaded image area-->
+            <div class="image-area mt-4 label3">
+                <img id="imageResult3" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                <input id="upload3" type="file" onchange="readURL2(this);" class="w-100">
+
+            </div>
+
+        </div>
+    </div>
+</div>

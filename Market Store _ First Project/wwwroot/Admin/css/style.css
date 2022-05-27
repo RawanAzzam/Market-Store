@@ -299,3 +299,70 @@
 .ml-5{
     margin-left:10px
 }
+
+
+#upload1 {
+    opacity: 0;
+    border: 2px solid #6c63ff !important;
+}
+#upload2 {
+    opacity: 0;
+    border: 2px solid #6c63ff !important;
+}
+#upload3 {
+    opacity: 0;
+    border: 2px solid #6c63ff !important;
+}
+
+#upload-label {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+}
+
+.image-area {
+    border: 2px dashed #6c63ff;
+    padding: 1rem;
+    position: relative;
+}
+
+.label1::before {
+    content: 'Slider1';
+    color: #000;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+.label2::before {
+    content: 'Slider2';
+    color: #000;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+.label3::before {
+    content: 'Slider3';
+    color: #000;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+.image-area::before {
+    text-transform: uppercase;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+     z-index: 1;
+}
+
+    .image-area img {
+        z-index: 2;
+        position: relative;
+    }
+
+/*
+*
+* ==========================================
+* FOR DEMO PURPOSES
+* ==========================================
+*
+*/

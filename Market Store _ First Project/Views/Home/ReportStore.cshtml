@@ -1,0 +1,47 @@
+﻿@model Market_Store___First_Project.Models.Store
+@{ Layout = "~/views/shared/_Layout.cshtml"; }
+
+<div class="container-xxl py-6">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-3">Report Store</h1>
+            <p>Tempor ut dolore lorem kasd vero ipsum sit eirmod sit. Ipsum diam justo sed rebum vero dolor duo.</p>
+        </div>
+        <div class="row g-5 justify-content-center">
+            <div class="col-lg-5 col-md-12 w-auto wow fadeInUp"
+                 data-wow-delay="0.1s">
+                <img src="~/Images/report.jpg" />
+            </div>
+            <div class="col-lg-7 col-md-12 wow fadeInUp pt-xxl-5" data-wow-delay="0.5s">
+                <form method="post" asp-action="ReportStore">
+                    <div class="row g-3">
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Store Id</label>
+                            <div class="col-sm-10">
+                                <input disabled type="number" value="@Model.Id" class="form-control" name="storeId">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">User Id</label>
+                            <div class="col-sm-10">
+                                <input disabled type="text" class="form-control" value="@Model.Storename">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea name="message" class="form-control" placeholder="Leave a message here" id="message" style="height: 200px"></textarea>
+                                <label for="message">Message</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary rounded-pill py-3 px-5" type="submit">Report</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Contact End -->

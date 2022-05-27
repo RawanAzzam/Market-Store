@@ -33,9 +33,10 @@ namespace Market_Store___First_Project.Controllers
                 ViewBag.name = HttpContext.Session.GetString("UserName");
             }
 
+            var testimonials = _context.Testimonial.Where(t => (bool)t.Isverfiy).Include(t => t.User).ToList();
            var category = _context.Category.ToList();
          
-            return View(category);
+            return View(Tuple.Create<IEnumerable<Category>,IEnumerable<Testimonial>>(category,testimonials));
         }
 
         public IActionResult Store(int? categoryId)
@@ -343,6 +344,70 @@ namespace Market_Store___First_Project.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult AddTestimonial()
+        {
+            return View();
+        }
+        public IActionResult ReportStore(int storeId)
+        {
+            var store = _context.Store.Where(s => s.Id == storeId).SingleOrDefault();
+            return View(store);
+        }
+
+        [HttpPost]
+        public IActionResult ReportStore(int storeId , string message)
+        {
+            int id = 44;
+            var reportIsFound = _context.Report.Where(t => t.Userid == id).SingleOrDefault();
+
+            if (reportIsFound == null)
+            {
+                Report report = new Report
+                {
+                    Mesaage = message,
+                    Storeid = storeId,
+                    Userid = id,
+                };
+                _context.Add(report);
+                _context.SaveChanges();
+            }
+            else
+            {
+                reportIsFound.Mesaage = message;
+                _context.Update(reportIsFound);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Store");
+        }
+        [HttpPost]
+        public IActionResult AddTestimonial( string message , int rateNum)
+        {
+            int id = 7;
+            var testimonialIsFound = _context.Testimonial.Where(t => t.Userid == id).SingleOrDefault();
+
+            if(testimonialIsFound == null)
+            {
+                Testimonial testimonial = new Testimonial
+                {
+                    Content = message,
+                    Rate = rateNum,
+                    Userid = id,
+                };
+                _context.Add(testimonial);
+                _context.SaveChanges();
+            }
+            else
+            {
+                testimonialIsFound.Content = message;
+                testimonialIsFound.Rate = rateNum;
+                _context.Update(testimonialIsFound);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Contact_us()

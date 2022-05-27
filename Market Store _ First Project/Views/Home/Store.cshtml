@@ -35,6 +35,8 @@
                             <h5 class="card-title">@item.Storename</h5>
                             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                             <a asp-action="ProductStore" asp-route-storeId="@item.Id" class="btn btn-primary">Go somewhere</a>
+                            <a asp-action="ReportStore" asp-route-storeId="@item.Id" class="btn btn-primary">Report</a>
+
                         </div>
                     </div>
                 }

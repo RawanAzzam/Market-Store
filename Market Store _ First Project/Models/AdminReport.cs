@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Market_Store___First_Project.Models
 {
@@ -146,26 +144,33 @@ namespace Market_Store___First_Project.Models
 
         }
 
-        public bool IsLoss(int orderId)
+        public string IsLoss(int orderId)
         {
             var userOrder = _context.Userorder.Where(uo => uo.IsCheckout == true
                 && uo.Id == orderId).SingleOrDefault();
-
-            int cost = (int)userOrder.Cost;
-            int totalCost = 0;
-
-            var productOrders = _context.Productorder.Where(pr => pr.Orderid == userOrder.Id).ToList();
-            foreach (var productOrder in productOrders)
+            if(userOrder != null)
             {
-                int qunitiy = (int)productOrder.Quntity;
+                int cost = (int)userOrder.Cost;
+                int totalCost = 0;
 
-                var productStore = _context.ProductStore.Where(ps => ps.Id == productOrder.Productid).SingleOrDefault();
-                var product = _context.Product.Where(p => p.Id == productStore.Productid).SingleOrDefault();
-                var store = _context.Store.Where(s => s.Id == productStore.Storeid).SingleOrDefault();
-                totalCost += (int)product.Sale * qunitiy;
+                var productOrders = _context.Productorder.Where(pr => pr.Orderid == userOrder.Id).ToList();
+                foreach (var productOrder in productOrders)
+                {
+                    int qunitiy = (int)productOrder.Quntity;
+
+                    var productStore = _context.ProductStore.Where(ps => ps.Id == productOrder.Productid).SingleOrDefault();
+                    var product = _context.Product.Where(p => p.Id == productStore.Productid).SingleOrDefault();
+                    var store = _context.Store.Where(s => s.Id == productStore.Storeid).SingleOrDefault();
+                    totalCost += (int)product.Sale * qunitiy;
+                }
+
+                return cost < totalCost ? "Loss" : "Profit";
             }
-
-            return cost < totalCost;
+            else
+            {
+                return "-";
+            }
+            
 
         }
 

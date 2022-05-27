@@ -42,9 +42,7 @@ body {
     min-height: 100vh;
 }
 
-.form-control:not(select) {
-    padding: 1.5rem 0.5rem;
-}
+
 
 select.form-control {
     height: 52px;

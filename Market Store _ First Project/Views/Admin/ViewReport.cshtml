@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Report>
+@{ Layout = "~/views/shared/AdminLayout.cshtml"; }
+
+<h1 class="pt-4 text-center">Manage Report</h1>
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-10">
+            <div class="bg-light text-center rounded p-4">
+
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Store Id</th>
+                            <th scope="col">Store Logo</th>
+                            <th scope="col">Store Name</th>
+                            <th scope="col">User Id</th>
+                            <th scope="col">User Name</th>
+                            <th scope="col">Report</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+            <tr>
+                <th scope="row">@item.Store.Id</th>
+                <td>
+                    <img class="rounded-circle" src="~/Images/@item.Store.StoreLogo" alt="" style="width: 40px; height: 40px;">
+                </td>
+                <td>@item.Store.Storename</td>
+                <td>@item.Userid</td>
+                <td>@item.User.Username</td>
+                <td>@item.Mesaage</td>
+
+            </tr>
+}
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+    </div>

@@ -18,8 +18,8 @@
 
 
 
-    <div class="content">
-        <div class="container">
+    <div class="mt-xxl-5">
+        <div class="container" style="margin: 60px;">
             <div class="row">
                 <div class="col-md-6">
                     <img src="https://www.fieldforce.work/wp-content/uploads/2021/06/about8.png" alt="Image" class="img-fluid">
@@ -62,7 +62,7 @@
 
                                 <input type="submit" value="Sign up" class="btn btn-block btn-primary">
                                 <span class="d-block text-left my-4 text-muted">
-                                    Have an Account?  <a href="https://localhost:44359/LoginAndRegister/Login">
+                                    Have an Account?  <a asp-action="Login">
                                         Login
                                     </a>
                                 </span>
@@ -86,7 +86,5 @@
     <script src="~/Auth/js/main.js"></script>
 </body>
 </html>
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+
 

@@ -110,13 +110,10 @@
             @if (!(bool)item.userorder.IsCheckout)
             {
     <td> Not Check out</td>}
-            @if (!(bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
-            {
-    <td> Profits </td>}
-            @if ((bool)Model.Item2.orderIsLoss[(int)item.userorder.Id])
-            {
-    <td> Loss </td>}
-
+            
+        <td> @Model.Item2.orderIsLoss[(int)item.userorder.Id]) </td>
+            
+          
 
         </tr>}
 

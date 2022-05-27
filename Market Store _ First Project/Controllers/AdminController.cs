@@ -937,6 +937,76 @@ namespace Market_Store___First_Project.Controllers
 
         #endregion
 
+        #region Testimonial
+        public IActionResult ViewTestimonial()
+        {
+            var testimonials = _context.Testimonial.Include(t => t.User).ToList();
+
+            return View(testimonials);
+        }
+
+       
+        public IActionResult ManageTestimonial(int id , int verfiy)
+        {
+            var testimonial = _context.Testimonial.Where(t => t.Id == id).SingleOrDefault();
+
+            switch (verfiy)
+            {
+                case 1: _context.Testimonial.Remove(testimonial);
+                    _context.SaveChanges();
+                    break;
+                case 2: testimonial.Isverfiy = true;
+                    _context.Update(testimonial);
+                    _context.SaveChanges();
+                    break;
+            }
+
+            var testimonials = _context.Testimonial.Include(t => t.User).ToList();
+
+            return RedirectToAction("ViewTestimonial");
+        }
+        #endregion
+
+        #region Report Store
+        public IActionResult ViewReport()
+        {
+            var storeReports = _context.Report.Include(r => r.User).Include(r => r.Store).ToList();
+
+            return View(storeReports);
+        }
+        #endregion
+
+        #region Manage Home
+        public IActionResult ManageHome()
+        {
+            return View();
+        }
+
+      
+        [HttpPost]
+        public async Task<IActionResult> ManageHome([Bind("Slide1,Slide2,Slide3,OurFeatures1,OurFeatures2",
+            "OurFeatures3","Websitename","Logoimage","Slide1File")] Home home)
+        {
+            // var homeInfo = _context.Home.SingleOrDefault();
+            
+            if (home.Slide1File != null)
+            {
+                string wwwRootPath = _webHostEnviroment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + "_" +
+                home.Slide1File.FileName;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await home.Slide1File.CopyToAsync(fileStream);
+                }
+                home.Slide1 = fileName;
+            }
+            _context.Add(home);
+            _context.SaveChanges();
+
+            return View();
+        }
+        #endregion
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

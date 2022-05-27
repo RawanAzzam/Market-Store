@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Testimonial>
+@{ Layout = "~/views/shared/AdminLayout.cshtml"; }
+
+<h1 class="pt-4 text-center">Manage Testimonial</h1>
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-10">
+            <div class="bg-light text-center rounded p-4">
+                
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">User Id</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">User Name</th>
+                            <th scope="col">Rate</th>
+                            <th scope="col">Message</th>
+                            <th scope="col">Status</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <th scope="row">@item.User.Id</th>
+                            <td>
+                                <img class="rounded-circle" src="~/Images/@item.User.ImagePath" alt="" style="width: 40px; height: 40px;">
+                            </td>
+                            <td>@item.User.Username</td>
+                            <td>                        <div class="ms-auto text-warning">
+                                       @for (int i = 0; i < item.Rate; i++)
+                {
+                           <i class="fa fa-star "></i>}
+                                       @for (int i = 0; i < (5 - item.Rate); i++)
+                {
+                           <i class="fa fa-star fa-w"></i>}
+
+                                   </div>
+                            </td>
+                            <td>@item.Content</td>
+                            @if ((bool)item.Isverfiy)
+                            {
+                        <td>
+                            Accepted
+                        </td>
+}
+                            @if (!(bool)item.Isverfiy)
+                            {
+                        <td>
+                            Waiting
+                        </td>}
+                            @if ((bool)item.Isverfiy)
+                            {
+                        <td>
+                            <a asp-action="ManageTestimonial" asp-route-verfiy="1"
+                                asp-route-id="@item.Id">Delete</a>
+                        </td>
+}
+                            @if (!(bool)item.Isverfiy)
+                            {
+                        <td>
+                            <a asp-action="ManageTestimonial" asp-route-verfiy="2"
+                               asp-route-id="@item.Id">Accept</a> |
+                            <a asp-action="ManageTestimonial" asp-route-verfiy="1"
+                                asp-route-id="@item.Id">reject</a>
+                        </td>}
+
+                        </tr>
+}
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        
+    </div>
+</div>

@@ -1,0 +1,102 @@
+﻿
+@{ Layout = "~/views/shared/_HomeLayout.cshtml"; }
+
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Testimonial</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" href="#">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-body" href="#">Pages</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Contact Us</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Contact Start -->
+<div class="container-xxl py-6">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-3">Testimonial</h1>
+            <p>Tempor ut dolore lorem kasd vero ipsum sit eirmod sit. Ipsum diam justo sed rebum vero dolor duo.</p>
+        </div>
+        <div class="row g-5 justify-content-center">
+            <div class="col-lg-5 col-md-12 w-auto wow fadeInUp"
+                 data-wow-delay="0.1s">
+                <img src="~/Images/testim.jpg" />
+            </div>
+            <div class="col-lg-7 col-md-12 wow fadeInUp pt-xxl-5" data-wow-delay="0.5s">
+                <form method="post" asp-action="AddTestimonial">
+                    <div class="row g-3">
+                        <fieldset class="row mb-3">
+                            <legend class="col-form-label col-sm-2 pt-0">Rate</legend>
+                            <div class="col-sm-10">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rateNum"
+                                           id="1" value="1">
+                                    <label class="form-check-label" for="1">
+                                        <i class="fa fa-star"></i>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rateNum"
+                                           id="2" value="2">
+                                    <label class="form-check-label" for="2">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rateNum"
+                                           id="3" value="3">
+                                    <label class="form-check-label" for="3">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rateNum"
+                                           id="4" value="4">
+                                    <label class="form-check-label" for="4">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rateNum"
+                                           id="5" value="5">
+                                    <label class="form-check-label" for="5">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea name="message" class="form-control" placeholder="Leave a message here" id="message" style="height: 200px"></textarea>
+                                <label for="message">Message</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary rounded-pill py-3 px-5" type="submit">Send Feedback</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<!-- Contact End -->

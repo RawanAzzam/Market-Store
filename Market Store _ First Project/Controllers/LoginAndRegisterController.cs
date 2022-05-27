@@ -65,7 +65,7 @@ namespace Market_Store___First_Project.Controllers
                 _context.Add(userLogin);
                 SendVerfiyCodeEmail(userLogin.UserName);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(VerfiyEmail));
+                return RedirectToAction(nameof(VerfiyEmail),new { userId = userLogin.Id});
 
             }
             return View();
@@ -89,33 +89,51 @@ namespace Market_Store___First_Project.Controllers
                 {
                     var user = _context.Systemuser.Where(
                                x => x.Id == auth.UserId).SingleOrDefault();
-                    switch (auth.RoleId)
+                    if( (bool)auth.IsVerfiy)
                     {
-                        case 1:
-                            HttpContext.Session.SetInt32("UserId",(int) user.Id);
-                            return RedirectToAction("Index", "Home");
-                        case 2:
-                            HttpContext.Session.SetInt32("AdminId",(int) user.Id);
-                            return RedirectToAction("Index", "Admin");
+                        switch (auth.RoleId)
+                        {
+                            case 1:
+                                HttpContext.Session.SetInt32("UserId", (int)user.Id);
+                                return RedirectToAction("Index", "Home");
+                            case 2:
+                                HttpContext.Session.SetInt32("AdminId", (int)user.Id);
+                                return RedirectToAction("Index", "Admin");
+                        }
                     }
+                    else
+                    {
+                       
+                        int userId = (int) auth.Id;
+                        return RedirectToAction("VerfiyEmail", new { userId = userId });
+                    }
+
                 }
             }
             return View();
         }
 
-        public IActionResult VerfiyEmail()
+        public IActionResult VerfiyEmail(int userId)
         {
-            return View();
+            var userLogin = _context.UserLogin.Where(ul => ul.Id == userId).SingleOrDefault();
+            SendVerfiyCodeEmail(userLogin.UserName);
+           
+            return View(userLogin);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult VerfiyEmail(string code)
+        public IActionResult VerfiyEmail(string code,int userId)
         {
             if (ModelState.IsValid)
             {
                 if(codeVerfiy == int.Parse(code))
                 {
+                    var auth = _context.UserLogin.
+                   Where(x => x.Id == userId).SingleOrDefault();
+                    auth.IsVerfiy = true;
+                    _context.Update(auth);
+                    _context.SaveChanges();
                     isVerfiy = true;
                 }
                 else
