@@ -164,9 +164,14 @@ namespace Market_Store___First_Project.Models
 
             modelBuilder.Entity<Home>(entity =>
             {
-                entity.HasNoKey();
+                
 
                 entity.ToTable("HOME");
+
+                entity.Property(e => e.Id)
+                   .HasColumnName("ID")
+                   .HasColumnType("NUMBER")
+                   .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Logoimage)
                     .HasColumnName("LOGOIMAGE")
@@ -175,17 +180,17 @@ namespace Market_Store___First_Project.Models
 
                 entity.Property(e => e.OurFeatures1)
                     .HasColumnName("OUR_FEATURES1")
-                    .HasMaxLength(100)
+                    .HasMaxLength(300)
                     .IsUnicode(false);
 
                 entity.Property(e => e.OurFeatures2)
                     .HasColumnName("OUR_FEATURES2")
-                    .HasMaxLength(100)
+                    .HasMaxLength(300)
                     .IsUnicode(false);
 
                 entity.Property(e => e.OurFeatures3)
                     .HasColumnName("OUR_FEATURES3")
-                    .HasMaxLength(100)
+                    .HasMaxLength(300)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Slide1)

@@ -11,6 +11,7 @@ namespace Market_Store___First_Project.Models
 {
     public partial class Home
     {
+        public decimal Id { get; set; }
         public string Slide1 { get; set; }
         public string Slide2 { get; set; }
         public string Slide3 { get; set; }
@@ -22,5 +23,9 @@ namespace Market_Store___First_Project.Models
 
         [NotMapped]
        public virtual IFormFile Slide1File { get; set; }
+        [NotMapped]
+        public virtual IFormFile Slide2File { get; set; }
+        [NotMapped]
+        public virtual IFormFile Slide3File { get; set; }
     }
 }

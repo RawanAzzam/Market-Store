@@ -979,16 +979,16 @@ namespace Market_Store___First_Project.Controllers
         #region Manage Home
         public IActionResult ManageHome()
         {
-            return View();
+            var home = _context.Home.Where(h => h.Id == 1).SingleOrDefault();
+            var contact = _context.Contactus.Where(c => c.Id == 1).SingleOrDefault();
+            return View(home);
         }
 
       
         [HttpPost]
-        public async Task<IActionResult> ManageHome([Bind("Slide1,Slide2,Slide3,OurFeatures1,OurFeatures2",
-            "OurFeatures3","Websitename","Logoimage","Slide1File")] Home home)
+        public async Task<IActionResult> ManageHome([Bind("Id","Slide1,Slide2,Slide3,OurFeatures1,OurFeatures2",
+            "OurFeatures3","Websitename","Logoimage","Slide1File","Slide2File","Slide3File")] Home home)
         {
-            // var homeInfo = _context.Home.SingleOrDefault();
-            
             if (home.Slide1File != null)
             {
                 string wwwRootPath = _webHostEnviroment.WebRootPath;
@@ -1001,10 +1001,34 @@ namespace Market_Store___First_Project.Controllers
                 }
                 home.Slide1 = fileName;
             }
-            _context.Add(home);
+            if (home.Slide2File != null)
+            {
+                string wwwRootPath = _webHostEnviroment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + "_" +
+                home.Slide2File.FileName;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await home.Slide2File.CopyToAsync(fileStream);
+                }
+                home.Slide2 = fileName;
+            }
+            if (home.Slide3File != null)
+            {
+                string wwwRootPath = _webHostEnviroment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + "_" +
+                home.Slide3File.FileName;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await home.Slide3File.CopyToAsync(fileStream);
+                }
+                home.Slide3 = fileName;
+            }
+            _context.Update(home);
             _context.SaveChanges();
 
-            return View();
+            return View(home);
         }
         #endregion
         public IActionResult Logout()
