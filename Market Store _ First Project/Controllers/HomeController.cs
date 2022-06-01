@@ -1,4 +1,5 @@
 ﻿using Market_Store___First_Project.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -17,211 +19,339 @@ namespace Market_Store___First_Project.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ModelContext _context;
-        public HomeController(ILogger<HomeController> logger , ModelContext modelContext)
+        private readonly IWebHostEnvironment _webHostEnviroment;
+        private readonly AdminReport adminReport = new AdminReport();
+        private static int id;
+
+        public HomeController(ILogger<HomeController> logger , ModelContext modelContext, IWebHostEnvironment webHostEnviroment)
         {
             _logger = logger;
             _context = modelContext;
+            _webHostEnviroment = webHostEnviroment;
         }
 
-        public IActionResult Index()
+        private void CheckSession()
         {
             ViewBag.isLogin = false;
-           if (HttpContext.Session.GetString("UserName") !=  null)
+            if (HttpContext.Session.GetInt32("UserId") != null)
             {
-
                 ViewBag.isLogin = true;
-                ViewBag.name = HttpContext.Session.GetString("UserName");
+                id = (int) HttpContext.Session.GetInt32("UserId");
             }
-
+        }
+        public IActionResult Index()
+        {
+            CheckSession();
             var testimonials = _context.Testimonial.Where(t => (bool)t.Isverfiy).Include(t => t.User).ToList();
-           var category = _context.Category.ToList();
-         
-            return View(Tuple.Create<IEnumerable<Category>,IEnumerable<Testimonial>>(category,testimonials));
+            var category = _context.Category.ToList();
+            var home = _context.Home.Where(h => h.Id == 1).SingleOrDefault();
+            var contact = _context.Contactus.Where(h => h.Id == 1).SingleOrDefault();
+            var about = _context.Aboutus.Where(h => h.Id == 1).SingleOrDefault();
+
+            ViewBag.Users = adminReport.GetRegisteredUsers();
+            ViewBag.Strors = adminReport.GetTotalStore();
+            ViewBag.Products = adminReport.GetTotalProduct();
+
+            return View(Tuple.Create<IEnumerable<Category>,IEnumerable<Testimonial>,Home,Contactus,Aboutus>
+                (category,testimonials,home,contact,about));
         }
 
+        //////////////////////////////// View Store For category //////////////////////////////////
+        #region Store
         public IActionResult Store(int? categoryId)
         {
+            CheckSession();
             var stores = _context.Store.ToList();
 
+            if(categoryId != null)
+            {
+                stores = stores.Where(s => s.Categoryid == categoryId).ToList();
+            }
             return View(stores);
         }
 
-        public IActionResult ProductStore(int? storeId)
+        //////////////////////////////// Report Store  //////////////////////////////////
+        public IActionResult ReportStore(int storeId)
         {
-            var productsStore = _context.ProductStore.Include(ps => ps.Store).Include(ps => ps.Product);
-         
-            return View(productsStore);
-        }
-
-        public IActionResult AddProductOrder(int productId)
-        {
-            int id = 6;
-            var lastOrder = _context.Userorder.Where(uo => uo.Userid == 6).OrderBy(uo => uo.Dateoforder)
-                .LastOrDefault();
-
-            if(lastOrder == null)
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
             {
-                Userorder userorder = new Userorder
-                {
-                    Userid = id,
-                    Dateoforder = System.DateTime.Now
-                };
-
-                _context.Add(userorder);
-                _context.SaveChanges();
-
-                var productOrder = new Productorder
-                {
-                    Orderid = userorder.Id,
-                    Productid = productId,
-                };
-                _context.Add(productOrder);
-                _context.SaveChanges();
-
-                ViewBag.countProduct = "*";
+                var store = _context.Store.Where(s => s.Id == storeId).SingleOrDefault();
+                return View(store);
             }
             else
             {
-                if((bool)lastOrder.IsCheckout)
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+         
+        }
+
+        [HttpPost]
+        public IActionResult ReportStore(int storeId, string message)
+        {
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
+            {
+                var reportIsFound = _context.Report.Where(t => t.Userid == id).SingleOrDefault();
+
+                if (reportIsFound == null)
                 {
-                    Userorder userorder = new Userorder
+                    Report report = new Report
                     {
+                        Mesaage = message,
+                        Storeid = storeId,
                         Userid = id,
-                        Dateoforder = System.DateTime.Now
                     };
-
-                    _context.Add(userorder);
+                    _context.Add(report);
                     _context.SaveChanges();
-
-                    var productOrder = new Productorder
-                    {
-                        Orderid = userorder.Id,
-                        Productid = productId,
-                        Quntity = 1,
-                    };
-
-                    _context.Add(productOrder);
-                    _context.SaveChanges();
-                    ViewBag.countProduct = "*";
                 }
                 else
                 {
-                    var productOrderIsFound = _context.Productorder.Where(
-                        po => po.Orderid == lastOrder.Id && po.Productid == productId).SingleOrDefault();
+                    reportIsFound.Mesaage = message;
+                    _context.Update(reportIsFound);
+                    _context.SaveChanges();
+                }
 
-                    if(productOrderIsFound == null)
+                return RedirectToAction("Store");
+            }
+            else
+            {
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+           
+        }
+
+        #endregion
+
+
+        //////////////////////////////// View Product For Store  //////////////////////////////////
+        public IActionResult ProductStore(int? storeId)
+        {
+            CheckSession();
+            var productsStore = _context.ProductStore.Include(ps => ps.Store).Include(ps => ps.Product).ToList();
+         
+            if(storeId != null)
+            {
+                productsStore = productsStore.Where(ps => ps.Storeid == storeId).ToList();
+            }
+            return View(productsStore);
+        }
+
+        //////////////////////////////// Cart  //////////////////////////////////
+        #region Cart 
+        //////////////////////////////// Add Product  //////////////////////////////////
+        public IActionResult AddProductOrder(int productId , int? quntity)
+        {
+            CheckSession();
+
+            if (HttpContext.Session.GetInt32("UserId") != null)
+            {
+                string message = null;
+                var product = _context.ProductStore.Where(ps => ps.Id == productId).SingleOrDefault();
+                if (product.Count >= (quntity == null ? 1 : quntity))
+                {
+                    var lastOrder = _context.Userorder.Where(uo => uo.Userid == id).OrderBy(uo => uo.Dateoforder)
+                      .LastOrDefault();
+
+                    if (lastOrder == null)
                     {
-                        var productOrder = new Productorder
+                        Userorder userorder = new Userorder
                         {
-                            Orderid = lastOrder.Id,
-                            Productid = productId,
-                            Quntity = 1,
+                            Userid = id,
+                            Dateoforder = System.DateTime.Now
                         };
 
+                        _context.Add(userorder);
+                        _context.SaveChanges();
+
+                        var productOrder = new Productorder
+                        {
+                            Orderid = userorder.Id,
+                            Productid = productId,
+                            Quntity = quntity == null ? 1 : quntity,
+                        };
                         _context.Add(productOrder);
                         _context.SaveChanges();
+
                         ViewBag.countProduct = "*";
                     }
                     else
                     {
-                        productOrderIsFound.Quntity += 1;
-                        _context.Update(productOrderIsFound);
-                        _context.SaveChanges();
-                        ViewBag.countProduct = "*";
-                    }
-                   
-                }
-            }
-            var productsStore = _context.ProductStore.Include(ps => ps.Store).Include(ps => ps.Product);
-
-            return RedirectToAction("ProductStore",productsStore);
-
-        }
-
-        public IActionResult Cart()
-        {
-            int id = 6;
-            var lastOrder = _context.Userorder.Where(uo => uo.Userid == 6 && uo.IsCheckout == false)
-                .OrderBy(uo => uo.Dateoforder)
-                .LastOrDefault();
-
-            if(lastOrder != null)
-            {
-                int totalCost = 0;
-
-                var productOrders = _context.Productorder.Where(pr => pr.Orderid == lastOrder.Id).ToList();
-                var productStore = _context.ProductStore.ToList();
-                var product = _context.Product.ToList();
-
-                var q = from po in productOrders
-                        join ps in productStore
-                        on po.Productid equals ps.Id
-                        join p in product
-                        on ps.Productid equals p.Id
-                        select new MultiTables
+                        if ((bool)lastOrder.IsCheckout)
                         {
-                            product = p,
-                            productorder = po,
-                            productStore = ps
-                        };
+                            Userorder userorder = new Userorder
+                            {
+                                Userid = id,
+                                Dateoforder = System.DateTime.Now
+                            };
 
-                foreach(var item in q)
-                {
-                    totalCost += (int) (item.product.Sale * item.productorder.Quntity);
+                            _context.Add(userorder);
+                            _context.SaveChanges();
+
+                            var productOrder = new Productorder
+                            {
+                                Orderid = userorder.Id,
+                                Productid = productId,
+                                Quntity = quntity == null ? 1 : quntity,
+                            };
+
+                            _context.Add(productOrder);
+                            _context.SaveChanges();
+                            ViewBag.countProduct = "*";
+                        }
+                        else
+                        {
+                            var productOrderIsFound = _context.Productorder.Where(
+                                po => po.Orderid == lastOrder.Id && po.Productid == productId).SingleOrDefault();
+
+                            if (productOrderIsFound == null)
+                            {
+                                var productOrder = new Productorder
+                                {
+                                    Orderid = lastOrder.Id,
+                                    Productid = productId,
+                                    Quntity = quntity == null ? 1 : quntity,
+                                };
+
+                                _context.Add(productOrder);
+                                _context.SaveChanges();
+                                ViewBag.countProduct = "*";
+                            }
+                            else
+                            {
+                                if (quntity == null)
+                                {
+                                    productOrderIsFound.Quntity += 1;
+                                }
+                                else
+                                {
+                                    productOrderIsFound.Quntity = quntity;
+                                }
+
+                                _context.Update(productOrderIsFound);
+                                _context.SaveChanges();
+                                ViewBag.countProduct = "*";
+                            }
+
+                        }
+                    }
                 }
-                lastOrder.Cost = totalCost;
-                _context.Update(lastOrder);
-                _context.SaveChanges();
-                return View(Tuple.Create<IEnumerable<MultiTables>,Userorder>(q,lastOrder));
-            }
+                else
+                {
+                    message = $"Quntity ({quntity}) is more than Available Count ({product.Count}) of product";
+                }
 
-            //foreach (var productOrder in productOrders)
-            //{
-            //    int qunitiy = (int)productOrder.Quntity;
-
-            //    var productStore = _context.ProductStore.Where(ps => ps.Id == productOrder.Productid).SingleOrDefault();
-            //    var product = _context.Product.Where(p => p.Id == productStore.Productid).SingleOrDefault();
-            //    totalCost += (int)product.Sale * qunitiy;
-            //}
-
-            return View(Tuple.Create<IEnumerable<MultiTables>, Userorder>(null, null));
-        }
-
-        public IActionResult DeletePrdouctFromOrder(int productId)
-        {
-            int id = 6;
-            var lastOrder = _context.Userorder.Where(uo => uo.Userid == 6 && uo.IsCheckout == false)
-                .OrderBy(uo => uo.Dateoforder)
-                .LastOrDefault();
-
-            if (lastOrder == null)
-            {
-                return NotFound();
+                return RedirectToAction(nameof(Cart), new { msg = message });
             }
             else
             {
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+
+            
+
+        }
+
+        //////////////////////////////// View Cart  //////////////////////////////////
+        public IActionResult Cart(string msg)
+        {
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
+            {
+                var lastOrder = _context.Userorder.Where(uo => uo.Userid == id && uo.IsCheckout == false)
+                 .OrderBy(uo => uo.Dateoforder)
+                 .LastOrDefault();
+
+                if (lastOrder != null)
+                {
+                    int totalCost = 0;
+
+                    var productOrders = _context.Productorder.Where(pr => pr.Orderid == lastOrder.Id).ToList();
+                    var productStore = _context.ProductStore.ToList();
+                    var product = _context.Product.ToList();
+
+                    var q = from po in productOrders
+                            join ps in productStore
+                            on po.Productid equals ps.Id
+                            join p in product
+                            on ps.Productid equals p.Id
+                            select new MultiTables
+                            {
+                                product = p,
+                                productorder = po,
+                                productStore = ps
+                            };
+
+                    foreach (var item in q)
+                    {
+                        totalCost += (int)(item.product.Sale * item.productorder.Quntity);
+                    }
+                    lastOrder.Cost = totalCost;
+                    _context.Update(lastOrder);
+                    _context.SaveChanges();
+                    ViewBag.Message = msg;
+                    return View(Tuple.Create<IEnumerable<MultiTables>, Userorder>(q, lastOrder));
+                }
+
+
+                return View(Tuple.Create<IEnumerable<MultiTables>, Userorder>(null, null));
+            }
+            else
+            {
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+
+            
+        }
+
+        //////////////////////////////// Delete Product From Cart //////////////////////////
+        public IActionResult DeletePrdouctFromOrder(int productId)
+        {
+            CheckSession();
+
+            if (HttpContext.Session.GetInt32("UserId") != null)
+            {
+                var lastOrder = _context.Userorder.Where(uo => uo.Userid == id && uo.IsCheckout == false)
+                 .OrderBy(uo => uo.Dateoforder)
+                 .LastOrDefault();
+
+                if (lastOrder == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
                     var productOrderIsFound = _context.Productorder.Where(
                         po => po.Orderid == lastOrder.Id && po.Productid == productId)
                       .SingleOrDefault();
 
                     if (productOrderIsFound == null)
                     {
-                    return NotFound();
+                        return NotFound();
                     }
                     else
                     {
-                    _context.Productorder.Remove(productOrderIsFound);
+                        _context.Productorder.Remove(productOrderIsFound);
                         _context.SaveChanges();
                     }
-   
-            }
-            
 
-            return RedirectToAction(nameof(Cart));
+                }
+
+
+                return RedirectToAction(nameof(Cart));
+            }
+            else
+            {
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+
+           
         }
 
+        //////////////////////////////// Check Out  //////////////////////////////////
         public IActionResult CheckOut(int orderId)
         {
+            CheckSession();
             var order = _context.Userorder.Where(uo => uo.Id == orderId).SingleOrDefault();
 
             return View(order);
@@ -230,7 +360,8 @@ namespace Market_Store___First_Project.Controllers
         [HttpPost]
         public IActionResult CheckOut(int userOrderId , int cardNumber , int mm , int yy)
         {
-            int id = 6;
+            CheckSession();
+            int id = 7;
             var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
             var order = _context.Userorder.Where(uo => uo.Id == userOrderId).SingleOrDefault();
             var card = _context.Card.Where(c => c.Tcb == 
@@ -246,8 +377,41 @@ namespace Market_Store___First_Project.Controllers
                
                 if(order.Cost <= card.Balance)
                 {
-                    SendEmail(user.Email, "hi rawan <br> ur order cost is " + order.Cost, "Payment");
+                    string body = $"Welcome  {user.Username} , Thank you to buy from us ,total Cost is { order.Cost}";
+                    string totalProduct = $"Total Cost is : {order.Cost} \nDate Of Order :{order.Dateoforder}\nProducts are : \n";
+                    var productsOrder = _context.Productorder.Where(pr => pr.Orderid == order.Id).ToList();
+                    var productStore = _context.ProductStore.ToList();
+                    var product = _context.Product.ToList();
+                    var q = from po in productsOrder
+                            join ps in productStore
+                        on po.Productid equals ps.Id
+                        join p in product
+                        on ps.Productid equals p.Id
+                        select new MultiTables
+                        {
+                            product = p,
+                            productorder = po,
+                            productStore = ps
+                        };
+                    int count = 1;
+                  
+                foreach (var item in q)
+                {
+                        totalProduct += $"{count++}\t\tProduct Name : {item.product.Namee}\t\tPrice : {item.product.Sale}\t\tQuntity : {item.productorder.Quntity}\t\tTotal : {item.product.Sale*item.productorder.Quntity}\n";
+                }
+                    string FileName = @"C:\Users\Lenovo\Desktop\"+user.Username+"-invoice.txt";
+                    StreamWriter writer = new StreamWriter(FileName);
+                    writer.Write(totalProduct);
+                    writer.Close();
+                    SendInvoiceByEmail(user.Email, body,FileName, "Payment");
                     card.Balance -= order.Cost;
+                      foreach(var item in productsOrder)
+                    {
+                        var product1 = _context.ProductStore.Where(ps => ps.Id == item.Productid).SingleOrDefault();
+                        product1.Count -= item.Quntity;
+                        _context.Update(product1);
+                        _context.SaveChanges();
+                    }
                     order.IsCheckout = true;
                     _context.Update(card);
                     _context.Update(order);
@@ -263,7 +427,7 @@ namespace Market_Store___First_Project.Controllers
 
         }
 
-        public void SendEmail(string to , string body , string subject)
+        public void SendInvoiceByEmail(string to , string body , string fileName, string subject)
         {
             
             string from = "rawanazzam68@gmail.com"; //From address    
@@ -274,6 +438,8 @@ namespace Market_Store___First_Project.Controllers
             message.Body = mailbody;
             message.BodyEncoding = Encoding.UTF8;
             message.IsBodyHtml = true;
+            message.Attachments.Add(new Attachment(fileName));
+
             try
             {
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
@@ -290,8 +456,13 @@ namespace Market_Store___First_Project.Controllers
             }
         }
 
+        #endregion
+
+        //////////////////////////////// View Product  //////////////////////////////////
+        #region View Product
         public IActionResult ViewProduct(int productId)
         {
+            CheckSession();
             var productStore = _context.ProductStore.Where(ps => (int)ps.Id == productId).SingleOrDefault();
             var product = _context.Product.Where(p => p.Id == productStore.Productid)
                 .Include(p => p.ProductCategory).SingleOrDefault();
@@ -307,31 +478,39 @@ namespace Market_Store___First_Project.Controllers
 
         public IActionResult AddRate(string feedback,int rate , int productId , int productStoreId)
         {
-            int id = 44;
+            CheckSession();
 
-            var ratingIsFound = _context.Rate.Where(r => r.UserId == id && 
-                                                    r.ProductId == productId).SingleOrDefault();
-
-            if(ratingIsFound == null)
+            if (HttpContext.Session.GetInt32("UserId") != null)
             {
-                Rate rateing = new Rate();
-                rateing.ProductId = productId;
-                rateing.UserId = id;
-                rateing.RateNum = rate;
-                rateing.Feedback = feedback;
+                var ratingIsFound = _context.Rate.Where(r => r.UserId == id &&
+                                                     r.ProductId == productId).SingleOrDefault();
 
-                _context.Add(rateing);
-                _context.SaveChanges();
+                if (ratingIsFound == null)
+                {
+                    Rate rateing = new Rate();
+                    rateing.ProductId = productId;
+                    rateing.UserId = id;
+                    rateing.RateNum = rate;
+                    rateing.Feedback = feedback;
+
+                    _context.Add(rateing);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    ratingIsFound.RateNum = rate;
+                    ratingIsFound.Feedback = feedback;
+                    _context.Update(ratingIsFound);
+                    _context.SaveChanges();
+                }
+
+                return RedirectToAction(nameof(ViewProduct), new { productId = productStoreId });
             }
             else
             {
-                ratingIsFound.RateNum = rate;
-                ratingIsFound.Feedback = feedback;
-                _context.Update(ratingIsFound);
-                _context.SaveChanges();
+                return RedirectToAction("Login", "LoginAndRegister");
             }
-            
-            return RedirectToAction(nameof(ViewProduct),new { productId = productStoreId });
+ 
         }
 
         private double getRate(decimal productId)
@@ -341,84 +520,151 @@ namespace Market_Store___First_Project.Controllers
 
             return _context.Rate.Where(r => r.ProductId == productId).Average(rate => (int)rate.RateNum);
         }
-        public IActionResult Privacy()
+
+        #endregion
+
+
+        public IActionResult AboutUs()
         {
-            return View();
+            CheckSession();
+            var about = _context.Aboutus.Where(a => a.Id == 1).SingleOrDefault();
+            return View(about);
         }
 
         public IActionResult AddTestimonial()
         {
-            return View();
-        }
-        public IActionResult ReportStore(int storeId)
-        {
-            var store = _context.Store.Where(s => s.Id == storeId).SingleOrDefault();
-            return View(store);
-        }
-
-        [HttpPost]
-        public IActionResult ReportStore(int storeId , string message)
-        {
-            int id = 44;
-            var reportIsFound = _context.Report.Where(t => t.Userid == id).SingleOrDefault();
-
-            if (reportIsFound == null)
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
             {
-                Report report = new Report
-                {
-                    Mesaage = message,
-                    Storeid = storeId,
-                    Userid = id,
-                };
-                _context.Add(report);
-                _context.SaveChanges();
+                return View();
             }
             else
             {
-                reportIsFound.Mesaage = message;
-                _context.Update(reportIsFound);
-                _context.SaveChanges();
+                return RedirectToAction("Login", "LoginAndRegister");
             }
-
-            return RedirectToAction("Store");
+           
         }
+       
         [HttpPost]
         public IActionResult AddTestimonial( string message , int rateNum)
         {
-            int id = 7;
-            var testimonialIsFound = _context.Testimonial.Where(t => t.Userid == id).SingleOrDefault();
-
-            if(testimonialIsFound == null)
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
             {
-                Testimonial testimonial = new Testimonial
+                var testimonialIsFound = _context.Testimonial.Where(t => t.Userid == id).SingleOrDefault();
+
+                if (testimonialIsFound == null)
                 {
-                    Content = message,
-                    Rate = rateNum,
-                    Userid = id,
-                };
-                _context.Add(testimonial);
-                _context.SaveChanges();
+                    Testimonial testimonial = new Testimonial
+                    {
+                        Content = message,
+                        Rate = rateNum,
+                        Userid = id,
+                    };
+                    _context.Add(testimonial);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    testimonialIsFound.Content = message;
+                    testimonialIsFound.Rate = rateNum;
+                    _context.Update(testimonialIsFound);
+                    _context.SaveChanges();
+                }
+
+                return RedirectToAction("Index");
             }
             else
             {
-                testimonialIsFound.Content = message;
-                testimonialIsFound.Rate = rateNum;
-                _context.Update(testimonialIsFound);
-                _context.SaveChanges();
+                return RedirectToAction("Login", "LoginAndRegister");
             }
-
-            return RedirectToAction("Index");
+           
         }
 
-        public IActionResult Contact_us()
+        public IActionResult ContactUs()
         {
-            return View();
+            CheckSession();
+            var contact = _context.Contactus.Where(c => c.Id == 1).SingleOrDefault();
+            return View(contact);
+        }
+
+        [HttpPost]
+        public IActionResult ContactUs([Bind("Message", "Username", "Email", "Phonenumber")] Contactususer contactus)
+        {
+            CheckSession();
+            _context.Add(contactus);
+            _context.SaveChanges();
+
+            var contact = _context.Contactus.Where(c => c.Id == 1).SingleOrDefault();
+
+            return View(contact);
+        }
+
+        public IActionResult ViewProfile()
+        {
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
+            {
+                var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
+                var userLogin = _context.UserLogin.Where(ul => ul.UserId == id).SingleOrDefault();
+                var orders = _context.Userorder.Where(o => o.Userid == id && o.IsCheckout == true).ToList();
+
+                return View(Tuple.Create<Systemuser, UserLogin, IEnumerable<Userorder>>(user, userLogin, orders));
+            }
+            else
+            {
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+         
+        }
+
+        public IActionResult EditProfile([Bind("Username,Email,Id,Location,ImagePath,ImageFile")] Systemuser systemuser,
+          string Passwordd)
+        {
+            CheckSession();
+            if (HttpContext.Session.GetInt32("UserId") != null)
+            {
+                var userLogin = _context.UserLogin.Where(u => u.UserId == systemuser.Id).SingleOrDefault();
+                userLogin.Passwordd = Passwordd;
+
+                if (systemuser.ImageFile != null)
+                {
+                    string wwwRootPath = _webHostEnviroment.WebRootPath;
+                    string fileName = Guid.NewGuid().ToString() + "_" +
+                    systemuser.ImageFile.FileName;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        systemuser.ImageFile.CopyTo(fileStream);
+                    }
+                    systemuser.ImagePath = fileName;
+                }
+                _context.Update(systemuser);
+                _context.Update(userLogin);
+                _context.SaveChanges();
+
+                return RedirectToAction(nameof(ViewProfile));
+            }
+            else
+            {
+                return RedirectToAction("Login", "LoginAndRegister");
+            }
+            
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            CheckSession();
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Logout()
+        {
+           
+            HttpContext.Session.Clear();
+            HttpContext.Session = null;
+            return RedirectToAction("Login", "LoginAndRegister");
         }
     }
 }

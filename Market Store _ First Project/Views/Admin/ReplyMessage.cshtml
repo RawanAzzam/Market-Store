@@ -1,0 +1,53 @@
+﻿@model Contactususer
+@{ ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/AdminLayout.cshtml"; }
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Add Store</h6>
+        <form asp-action="ReplyMessage" method="post" enctype="multipart/form-data">
+
+            <input hidden name="id" value="@Model.Id" />
+            <input hidden name="email" value="@Model.Email" />
+
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">UserName</label>
+                <div class="col-sm-10">
+                    <input disabled type="text" value="@Model.Username" class="form-control" id="inputname">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input disabled type="text" value="@Model.Email" class="form-control" id="inputname">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">Message</label>
+                <div class="col-sm-10">
+                    <textarea disabled class="form-control" placeholder="Leave a message here" style="height: 200px">
+@Model.Message
+</textarea>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputname" class="col-sm-2 col-form-label">Reply</label>
+                <div class="col-sm-10">
+                    <textarea name="body" class="form-control" placeholder="Leave a message here" style="height: 200px">
+</textarea>
+                </div>
+            </div>
+
+
+
+            <button type="submit" class="btn btn-primary">Reply</button>
+        </form>
+    </div>
+
+</div>
+
+
+
+

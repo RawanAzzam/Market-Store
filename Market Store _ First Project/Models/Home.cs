@@ -15,11 +15,10 @@ namespace Market_Store___First_Project.Models
         public string Slide1 { get; set; }
         public string Slide2 { get; set; }
         public string Slide3 { get; set; }
-        public string OurFeatures1 { get; set; }
+       
         public string Websitename { get; set; }
         public string Logoimage { get; set; }
-        public string OurFeatures2 { get; set; }
-        public string OurFeatures3 { get; set; }
+       
 
         [NotMapped]
        public virtual IFormFile Slide1File { get; set; }

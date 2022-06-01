@@ -444,6 +444,7 @@
     }
 }
 
+
 .cardcat {
     position: relative;
     display: flex;
@@ -634,4 +635,47 @@ body {
     }
 }
 
+#factNumbers {
+    height: 500px;
+    background-image: url(/Images/factNumbers.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
 
+
+    #factNumbers h1 {
+        position: absolute;
+        top: 20%;
+        left: 40%;
+    }
+
+#numberDivText {
+    position: relative;
+    top: 70%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.numberBox {
+    display: flex;
+    flex-direction: column;
+}
+
+    .numberBox strong {
+        font-size: 22px;
+        color: #1a1c1ad1;
+    }
+
+    .numberBox h6 {
+        text-align: center;
+        font-weight: bold
+    }
+#factNumbersText {
+    position: absolute;
+    top: 35%;
+    width: 40%;
+    text-align: center;
+    left: 30%;
+    color: #000000ad;
+}

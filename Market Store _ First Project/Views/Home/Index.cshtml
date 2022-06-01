@@ -1,4 +1,4 @@
-﻿@model Tuple<IEnumerable<Category>, IEnumerable<Testimonial>>
+﻿@model Tuple<IEnumerable<Category>, IEnumerable<Testimonial>, Home, Contactus, Aboutus>
 @{ Layout = "~/views/shared/_HomeLayout.cshtml"; }
 
 <style>
@@ -20,7 +20,7 @@
     <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="w-100" src="~/home/img/clothesSlider .jpg" alt="Image">
+                <img class="w-100" src="~/Images/@Model.Item3.Slide1" alt="Image">
                 <div class="carousel-caption">
                     <div class="container">
                         <div class="row justify-content-start">
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="carousel-item">
-                <img class="w-100" src="~/home/img/perfumeSlider.jpg" alt="Image">
+                <img class="w-100" src="~/Images/@Model.Item3.Slide2" alt="Image">
                 <div class="carousel-caption">
                     <div class="container">
                         <div class="row justify-content-start">
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="carousel-item">
-                <img class="w-100" src="~/home/img/accessoriesSlider.jpg" alt="Image">
+                <img class="w-100" src="~/Images/@Model.Item3.Slide3" alt="Image">
                 <div class="carousel-caption">
                     <div class="container">
                         <div class="row justify-content-start">
@@ -79,19 +79,17 @@
             <div class="col-lg-6">
                 <div class="section-header text-start mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
                     <h1 class="display-5 mb-3">Our Category</h1>
-                    <p>Tempor ut dolore lorem kasd vero ipsum sit eirmod sit. Ipsum diam justo sed rebum vero dolor duo.</p>
                 </div>
             </div>
             <main class="page-content justify-content-center">
                 @foreach (var item in Model.Item1)
                 {
-                    <div class="cardcat">
-                        <div class="content">
-                            <h1 class="title">@item.CategoryName</h1>
-                            <a asp-action="Store" class="btn btn_color">View Stroe</a>
-                        </div>
-                    </div>
-                }
+    <div class="cardcat">
+        <div class="content">
+            <h1 class="title">@item.CategoryName</h1>
+            <a asp-action="Store" asp-route-categoryId="@item.Id" class="btn btn_color">View Stroe</a>
+        </div>
+    </div>}
 
 
             </main>
@@ -115,9 +113,7 @@
 
                     <h4 class="mb-3">Upfront Pricing</h4>
                     <p class="mb-4">
-                        No surprises and no hidden fees.
-                        You always know what's included in
-                        The service package you pay for.
+                        @Model.Item5.OurFeatures1
                     </p>
                 </div>
             </div>
@@ -129,8 +125,7 @@
 
                     </h4>
                     <p class="mb-4">
-                        Select the time that suits you
-                        We will take care of everything else.
+                        @Model.Item5.OurFeatures2
                     </p>
                 </div>
             </div>
@@ -141,11 +136,36 @@
                         Manufacturing
 
                     </h4>
-                    <p class="mb-4"> All of our products are mechanically crafted to ensure meticulous detailing</p>
+                    <p class="mb-4">
+                        @Model.Item5.OurFeatures3
+                    </p>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div id="factNumbers">
+
+    <h1>Enjoy Full Servies</h1>
+    <strong id="factNumbersText">Since our focus is laser pointed to make our clients succeed thier buisness, We focus on providing the full service by our talented team. No matter what product you get from us, Make sure it's stable, functional and returning an amazing results in return.</strong>
+    <div id="numberDivText">
+
+        <div class="numberBox">
+            <strong>Number of Clients</strong>
+            <h6 id="Number of reservations">@ViewBag.Users</h6>
+        </div>
+        <div class="numberBox">
+            <strong>Number Of Store</strong>
+            <h6 id="restaurants">@ViewBag.Strors</h6>
+        </div>
+        <div class="numberBox">
+            <strong>Number Of Product</strong>
+            <h6 id="hotel">@ViewBag.Products</h6>
+        </div>
+       
+    </div>
+
+
 </div>
 
 <!-- Testimonial Start -->
@@ -158,30 +178,29 @@
         <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
             @foreach (var item in Model.Item2)
             {
-                <div class="testimonial-item position-relative bg-white p-5 mt-4">
-                    <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
-                    <p class="mb-4">@item.Content</p>
-                    <div class="d-flex align-items-center">
-                        <img class="flex-shrink-0 rounded-circle" src="~/Images/@item.User.ImagePath" alt="">
-                        <div class="ms-3">
-                            <h5 class="mb-1">@item.User.Username</h5>
-                            
-                                <div class="ms-auto text-warning">
-                                    @for (int i = 0; i < item.Rate; i++)
-                                    {
-                            <i class="fa fa-star "></i>}
-                                    @for (int i = 0; i < (5 - item.Rate); i++)
-                                    {
-                            <i class="fa fa-star fa-w"></i>}
+<div class="testimonial-item position-relative bg-white p-5 mt-4">
+    <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
+    <p class="mb-4">@item.Content</p>
+    <div class="d-flex align-items-center">
+        <img class="flex-shrink-0 rounded-circle" src="~/Images/@item.User.ImagePath" alt="">
+        <div class="ms-3">
+            <h5 class="mb-1">@item.User.Username</h5>
 
-                                </div>
-                            
-                        </div>
-                    </div>
-                </div>
-            }
+            <div class="ms-auto text-warning">
+                @for (int i = 0; i < item.Rate; i++)
+                {
+<i class="fa fa-star "></i>}
+                @for (int i = 0; i < (5 - item.Rate); i++)
+                {
+<i class="fa fa-star fa-w"></i>}
 
-            
+            </div>
+
+        </div>
+    </div>
+</div>            }
+
+
         </div>
     </div>
 </div>

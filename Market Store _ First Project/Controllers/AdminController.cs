@@ -4,12 +4,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Rotativa;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Market_Store___First_Project.Controllers
 {
@@ -18,34 +22,69 @@ namespace Market_Store___First_Project.Controllers
         private readonly ModelContext _context;
         private readonly IWebHostEnvironment _webHostEnviroment;
         private readonly AdminReport report = new AdminReport();
-        private readonly static int id;
+        private  static int id;
         public AdminController(ModelContext context, IWebHostEnvironment webHostEnviroment)
         {
             _context = context;
             _webHostEnviroment = webHostEnviroment;
         }
-
-        private void SetImage()
+        private void CheckSession()
         {
             if (HttpContext.Session.GetInt32("AdminId") != null)
             {
-                int id = (int)HttpContext.Session.GetInt32("AdminId");
-
+                id = (int) HttpContext.Session.GetInt32("AdminId");
                 var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
-
                 ViewBag.userName = user.Username;
                 ViewBag.ImageFile = user.ImagePath;
-               }
+            }
+           
+        }
+      
+
+        public void GetChart()
+        {
+            var stores = _context.Store.ToList();
+
+            string[] storeNames = new string[stores.Count];
+            int[] sale = new int[stores.Count];
+            int count = 0;
+            foreach (var item in stores)
+            {
+                storeNames[count] = item.Storename;
+                sale[count] = (int)report.GetTotalSalesForStore((int)item.Id);
+                count++;
+                //dataPoints.Add(new Charts((int)item.Id,(int) report.GetTotalSalesForStore((int)item.Id)));
+            }
+
+            
+            ViewBag.storeNames =  JsonConvert.SerializeObject(storeNames);
+            ViewBag.sale = JsonConvert.SerializeObject(sale);
+        }
+
+        public void GetAnnualSale()
+        {
+            string[] months = new string[] { "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+            int year = DateTime.Now.Year;
+            int[] saleMonth = new int[12];
+            for (int i = 1; i <= 12; i++)
+                saleMonth[i - 1] = (int) report.GetSaleForPeroidOfTime(new DateTime(year, i, 1),
+                    new DateTime(year, i, 28));
+
+            ViewBag.months = JsonConvert.SerializeObject(months);
+            ViewBag.saleMonth = JsonConvert.SerializeObject(saleMonth);
         }
         // GET: AnminController
         public ActionResult Index()
         {
-           
-            if (HttpContext.Session.GetInt32("AdminId") != null)
-            {
-                int id = (int) HttpContext.Session.GetInt32("AdminId");
+            CheckSession();
+            GetChart();
+            GetAnnualSale();
 
-                var user = _context.Systemuser.Where(u => u.Id == id).SingleOrDefault();
+            //if (HttpContext.Session.GetInt32("AdminId") != null)
+            //{
+            // int id = (int) HttpContext.Session.GetInt32("AdminId");
+
+            var user = _context.Systemuser.Where(u => u.Id == 6).SingleOrDefault();
 
                 ViewBag.userName = user.Username;
                 ViewBag.ImageFile = user.ImagePath;
@@ -54,14 +93,20 @@ namespace Market_Store___First_Project.Controllers
                 ViewBag.MontlySale = report.GetMontlySale();
                 ViewBag.TotalStore = report.GetTotalStore();
 
-                return View(report.GetOdresByPeroidOfTime(null,null));
+                var contactuser = _context.Contactususer.ToList();
+                Tuple<IEnumerable<MultiTables>, MultiTables, IEnumerable<Contactususer>> tuple
+                    = Tuple.Create<IEnumerable<MultiTables>, MultiTables, IEnumerable<Contactususer>>
+                    (report.GetOdresByPeroidOfTime(null, null).Item1, report.GetOdresByPeroidOfTime(null, null).Item2,
+                    contactuser);
+                return View(tuple);
 
-            }
-            return RedirectToAction("Login", "LoginAndRegister");
+            //}
+            //return RedirectToAction("Login", "LoginAndRegister");
         }
 
         public ActionResult GetOrderBySpecficDate(DateTime? dateFrom, DateTime? dateTo,string? type)
         {
+            CheckSession();
             if (type != null && type.Equals("annule"))
             {
                 dateFrom = new DateTime(DateTime.Now.Year, 1, 1);
@@ -80,7 +125,7 @@ namespace Market_Store___First_Project.Controllers
 
         public IActionResult AdminProfile()
         {
-            int id =44;
+            CheckSession();
             var profileInfo = _context.Systemuser.Where(user => user.Id == id).SingleOrDefault();
             var adminLogin = _context.UserLogin.Where(user => user.UserId == id).SingleOrDefault();
 
@@ -89,6 +134,7 @@ namespace Market_Store___First_Project.Controllers
 
         public async Task<IActionResult>  EditProfile([Bind("Username,Email,Id,Location,ImagePath,ImageFile")] Systemuser systemuser)
         {
+            CheckSession();
             if (ModelState.IsValid)
             {
                 try
@@ -135,6 +181,7 @@ namespace Market_Store___First_Project.Controllers
         public IActionResult Users(string? userName, int? userId, string? location, string? roleName,
             string? email)
         {
+            CheckSession();
             var systemUsers = _context.Systemuser.ToList();
             var usresLogin = _context.UserLogin.ToList();
             var roles = _context.Role.ToList();
@@ -173,6 +220,7 @@ namespace Market_Store___First_Project.Controllers
         #region Create User
         public IActionResult CreateUser()
         {
+            CheckSession();
             var roles = _context.Role.ToList();
             return View(roles);
         }
@@ -184,6 +232,7 @@ namespace Market_Store___First_Project.Controllers
         public async Task<IActionResult> CreateUser([Bind("Username,Email,Location,ImageFile")] Systemuser systemuser,
            String password, int roleId)
         {
+            CheckSession();
             if (ModelState.IsValid)
             {
                 if (systemuser.ImageFile != null)
@@ -227,6 +276,7 @@ namespace Market_Store___First_Project.Controllers
         #region editUser
         public async Task<IActionResult> EditUser(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -246,6 +296,7 @@ namespace Market_Store___First_Project.Controllers
         public async Task<IActionResult> EditUser(decimal id, [Bind("Username,Email,Id,Location,ImagePath,ImageFile")] Systemuser systemuser,
              String password)
         {
+            CheckSession();
             if (id != systemuser.Id)
             {
                 return NotFound();
@@ -303,6 +354,7 @@ namespace Market_Store___First_Project.Controllers
         #region Delete User
         public async Task<IActionResult> DeleteUser(int? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -333,7 +385,7 @@ namespace Market_Store___First_Project.Controllers
         public IActionResult SearchUser(string? userName , int? userId ,string? location , string? roleName,
             string? email)
         {
-            
+            CheckSession();
             var usresLogin = _context.UserLogin.ToList();
             var roles = _context.Role.ToList();
 
@@ -357,6 +409,7 @@ namespace Market_Store___First_Project.Controllers
         #region Category
         public async Task<IActionResult> Categories()
         {
+            CheckSession();
             return View(await _context.Category.ToListAsync());
         }
 
@@ -364,6 +417,7 @@ namespace Market_Store___First_Project.Controllers
         #region Create Category
         public IActionResult CreateCategory()
         {
+            CheckSession();
             return View();
         }
 
@@ -372,6 +426,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCategory([Bind("CategoryName,ImageFile")] Category category)
         {
+            CheckSession();
             if (ModelState.IsValid)
             {
                 if (category.ImageFile != null)
@@ -398,6 +453,7 @@ namespace Market_Store___First_Project.Controllers
         #region Edit Category
         public async Task<IActionResult> EditCategory(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -416,6 +472,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCategory(decimal id, [Bind("Id,CategoryName,ImageFile,ImagePath")] Category category)
         {
+            CheckSession();
             if (id != category.Id)
             {
                 return NotFound();
@@ -462,6 +519,7 @@ namespace Market_Store___First_Project.Controllers
         #region Delete Category
         public async Task<IActionResult> DeleteCategory(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -496,8 +554,7 @@ namespace Market_Store___First_Project.Controllers
         #region Store
         public ActionResult Stores(string? categoryName , string? location , int? categoryId)
         {
-           
-
+            CheckSession();
             var stores = _context.Store.ToList();
             var categories = _context.Category.ToList();
 
@@ -522,6 +579,7 @@ namespace Market_Store___First_Project.Controllers
         #region Create Store
         public IActionResult CreateStore()
         {
+            CheckSession();
             ViewData["Categoryid"] = new SelectList(_context.Category, "Id", "CategoryName");
             return View();
         }
@@ -531,6 +589,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateStore([Bind("Storename,Storelocation,Ownername,Categoryid,LogoFile")] Store store)
         {
+            CheckSession();
             if (ModelState.IsValid)
             {
                 if (store.LogoFile != null)
@@ -558,6 +617,7 @@ namespace Market_Store___First_Project.Controllers
         #region Edit Store
         public async Task<IActionResult> EditStore(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -577,6 +637,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditStore(decimal id, [Bind("Storename,Storelocation,Ownername,Categoryid,StoreLogo,Id,LogoFile")] Store store)
         {
+            CheckSession();
             if (id != store.Id)
             {
                 return NotFound();
@@ -624,6 +685,7 @@ namespace Market_Store___First_Project.Controllers
         #region Delete Store
         public async Task<IActionResult> DeleteStore(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -659,8 +721,7 @@ namespace Market_Store___First_Project.Controllers
         #region Product Store
         public ActionResult ProductStore(int? storeId ,int? productStoreId)
         {
-
-
+            CheckSession();
             var productStore = _context.ProductStore.ToList();
             var stores = _context.Store.ToList();
             var products = _context.Product.ToList();
@@ -703,6 +764,7 @@ namespace Market_Store___First_Project.Controllers
           #region Create Product Store
         public IActionResult CreateProductStore()
         {
+            CheckSession();
             ViewData["Productid"] = new SelectList(_context.Product, "Id", "Namee");
             ViewData["Storeid"] = new SelectList(_context.Store, "Id", "Storename");
             return View();
@@ -713,6 +775,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProductStore([Bind("Storeid,Productid,Count")] ProductStore productStore)
         {
+            CheckSession();
             if (ModelState.IsValid)
             {
               var isFound = _context.ProductStore.Where(ps => ps.Storeid == productStore.Storeid
@@ -741,6 +804,7 @@ namespace Market_Store___First_Project.Controllers
         ////////////////////**************** Delete Product Store
         public async Task<IActionResult> DeleteProductStore(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -769,6 +833,7 @@ namespace Market_Store___First_Project.Controllers
         #region Product
         public IActionResult Products()
         {
+            CheckSession();
             var products = _context.Product.ToList();
             var productCategory = _context.ProductCategory.ToList();
 
@@ -795,6 +860,7 @@ namespace Market_Store___First_Project.Controllers
         #region Create Product
         public IActionResult CreateProduct()
         {
+            CheckSession();
             ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategory, "Id", "Name");
             return View();
         }
@@ -804,6 +870,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProduct([Bind("Namee,Sale,Price,ImageFile,ProductCategoryId")] Product product)
         {
+            CheckSession();
             if (ModelState.IsValid)
             {
                 if (product.ImageFile != null)
@@ -832,6 +899,7 @@ namespace Market_Store___First_Project.Controllers
         #region Edit Product
         public async Task<IActionResult> EditProduct(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -850,6 +918,7 @@ namespace Market_Store___First_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(decimal id, [Bind("Id,Namee,Sale,Price,ImagePath,ImageFile,ProductCategoryId,DateOfAdd")] Product product)
         {
+            CheckSession();
             if (id != product.Id)
             {
                 return NotFound();
@@ -897,6 +966,7 @@ namespace Market_Store___First_Project.Controllers
         #region Delete Product
         public async Task<IActionResult> DeleteProduct(decimal? id)
         {
+            CheckSession();
             if (id == null)
             {
                 return NotFound();
@@ -932,6 +1002,7 @@ namespace Market_Store___First_Project.Controllers
         ///////////////////////**************** check if product Exsit 
         private bool ProductExists(decimal id)
         {
+
             return _context.Product.Any(e => e.Id == id);
         }
 
@@ -940,14 +1011,15 @@ namespace Market_Store___First_Project.Controllers
         #region Testimonial
         public IActionResult ViewTestimonial()
         {
+            CheckSession();
             var testimonials = _context.Testimonial.Include(t => t.User).ToList();
 
             return View(testimonials);
         }
 
-       
         public IActionResult ManageTestimonial(int id , int verfiy)
         {
+            CheckSession();
             var testimonial = _context.Testimonial.Where(t => t.Id == id).SingleOrDefault();
 
             switch (verfiy)
@@ -970,6 +1042,7 @@ namespace Market_Store___First_Project.Controllers
         #region Report Store
         public IActionResult ViewReport()
         {
+            CheckSession();
             var storeReports = _context.Report.Include(r => r.User).Include(r => r.Store).ToList();
 
             return View(storeReports);
@@ -979,16 +1052,22 @@ namespace Market_Store___First_Project.Controllers
         #region Manage Home
         public IActionResult ManageHome()
         {
+            CheckSession();
             var home = _context.Home.Where(h => h.Id == 1).SingleOrDefault();
             var contact = _context.Contactus.Where(c => c.Id == 1).SingleOrDefault();
-            return View(home);
+            var about = _context.Aboutus.Where(a => a.Id == 1).SingleOrDefault();
+            return View(Tuple.Create<Home,Contactus,Aboutus>(home,contact,about));
         }
 
       
         [HttpPost]
-        public async Task<IActionResult> ManageHome([Bind("Id","Slide1,Slide2,Slide3,OurFeatures1,OurFeatures2",
-            "OurFeatures3","Websitename","Logoimage","Slide1File","Slide2File","Slide3File")] Home home)
+        public async Task<IActionResult> ManageHome([Bind("Id","Slide1","Slide2","Slide3","Websitename",
+            "Logoimage","Slide1File","Slide2File","Slide3File")] Home home,
+            [Bind("Email", "Address", "Phonenumber","Id")] Contactus contact,
+            [Bind("ImageFile", "ImagePath","Info","Id", "OurFeatures1", "OurFeatures2", "OurFeatures3")] Aboutus aboutus)
         {
+            CheckSession();
+            #region home
             if (home.Slide1File != null)
             {
                 string wwwRootPath = _webHostEnviroment.WebRootPath;
@@ -1025,10 +1104,82 @@ namespace Market_Store___First_Project.Controllers
                 }
                 home.Slide3 = fileName;
             }
+            #endregion
+
+            #region About us
+            if (aboutus.ImageFile != null)
+            {
+                string wwwRootPath = _webHostEnviroment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + "_" +
+                aboutus.ImageFile.FileName;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await aboutus.ImageFile.CopyToAsync(fileStream);
+                }
+                aboutus.ImagePath = fileName;
+            }
+            #endregion
+
+            
             _context.Update(home);
+            _context.Update(contact);
+            _context.Update(aboutus);
             _context.SaveChanges();
 
-            return View(home);
+            return View(Tuple.Create<Home, Contactus, Aboutus>(home, contact, aboutus));
+        }
+        #endregion
+
+        #region Contact Us User
+
+        public IActionResult ReplyMessage(int contactUserId)
+        {
+            CheckSession();
+            var contact = _context.Contactususer.Where(c => c.Id == contactUserId).SingleOrDefault();
+
+            return View(contact);
+        }
+
+        [HttpPost]
+        public IActionResult ReplyMessage(int id ,string email, string body)
+        {
+            CheckSession();
+            SendEmail(email, body);
+
+            var contactUs = _context.Contactususer.Where(c => c.Id == id).SingleOrDefault();
+            _context.Contactususer.Remove(contactUs);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        private void SendEmail(string email,string body)
+        {
+
+            string to = email; //To address    
+            string from = "rawanazzam68@gmail.com"; //From address    
+            MailMessage message = new MailMessage(from, to);
+
+            string mailbody = body;
+            message.Subject = "Reply Report Problem";
+            message.Body = mailbody;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = true;
+            try
+            {
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtp.Credentials = new NetworkCredential("rawanazzam68@gmail.com", "Rram1210.");
+                    smtp.EnableSsl = true;
+                    smtp.Send(message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
         #endregion
         public IActionResult Logout()

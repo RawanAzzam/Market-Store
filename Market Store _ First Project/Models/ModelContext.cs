@@ -62,8 +62,29 @@ namespace Market_Store___First_Project.Models
 
                 entity.Property(e => e.Info)
                     .HasColumnName("INFO")
-                    .HasMaxLength(200)
+                    .HasMaxLength(500)
                     .IsUnicode(false);
+
+                entity.Property(e => e.OurFeatures1)
+                   .HasColumnName("OUR_FEATURES1")
+                   .HasMaxLength(300)
+                   .IsUnicode(false);
+
+                entity.Property(e => e.OurFeatures2)
+                    .HasColumnName("OUR_FEATURES2")
+                    .HasMaxLength(300)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OurFeatures3)
+                    .HasColumnName("OUR_FEATURES3")
+                    .HasMaxLength(300)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ImagePath)
+                   .HasColumnName("IMAGEPATH")
+                   .HasMaxLength(100)
+                   .IsUnicode(false);
+
             });
 
             modelBuilder.Entity<Card>(entity =>
@@ -178,20 +199,7 @@ namespace Market_Store___First_Project.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.OurFeatures1)
-                    .HasColumnName("OUR_FEATURES1")
-                    .HasMaxLength(300)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.OurFeatures2)
-                    .HasColumnName("OUR_FEATURES2")
-                    .HasMaxLength(300)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.OurFeatures3)
-                    .HasColumnName("OUR_FEATURES3")
-                    .HasMaxLength(300)
-                    .IsUnicode(false);
+               
 
                 entity.Property(e => e.Slide1)
                     .HasColumnName("SLIDE1")

@@ -1,19 +1,20 @@
-﻿@model Home
+﻿@model Tuple<Home,Contactus,Aboutus>
 @{ Layout = "~/views/shared/AdminLayout.cshtml"; }
 
 <div class="container py-5">
     <form method="post" asp-action="ManageHome" enctype="multipart/form-data">
-        <input name="Id" value="@Model.Id" hidden />
-        <input name="Slide1" value="@Model.Slide1" hidden />
-        <input name="Slide2" value="@Model.Slide2" hidden />
-        <input name="Slide3" value="@Model.Slide3" hidden />
+        <input name="Id" value="1" hidden />
+        <input name="Slide1" value="@Model.Item1.Slide1" hidden />
+        <input name="Slide2" value="@Model.Item1.Slide2" hidden />
+        <input name="Slide3" value="@Model.Item1.Slide3" hidden />
+        <input name="ImagePath" value="@Model.Item3.ImagePath" hidden />
 
         <div class="row">
 
             <div class="col-lg-10 mx-auto">
                 <!-- Uploaded image area-->
                 <div class="image-area mt-4 label1">
-                    <img id="imageResult1" src="~/Images/@Model.Slide1" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                    <img id="imageResult1" src="~/Images/@Model.Item1.Slide1" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
                     <input id="upload1" type="file" name="Slide1File" onchange="readURL(this);" class="w-100">
 
                 </div>
@@ -26,7 +27,7 @@
             <div class="col-lg-10 mx-auto">
                 <!-- Uploaded image area-->
                 <div class="image-area mt-4 label2">
-                    <img id="imageResult2" src="~/Images/@Model.Slide2" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                    <img id="imageResult2" src="~/Images/@Model.Item1.Slide2" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
                     <input id="upload2" type="file" name="Slide2File" onchange="readURL1(this);" class="w-100">
 
                 </div>
@@ -38,7 +39,7 @@
             <div class="col-lg-10 mx-auto">
                 <!-- Uploaded image area-->
                 <div class="image-area mt-4 label3">
-                    <img id="imageResult3" src="~/Images/@Model.Slide3" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                    <img id="imageResult3" src="~/Images/@Model.Item1.Slide3" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
                     <input id="upload3" type="file" name="Slide3File" onchange="readURL2(this);" class="w-100">
 
                 </div>
@@ -54,17 +55,18 @@
                     <div class="container">
                         <div class="row g-5 align-items-center">
                             <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
-                                <div class="about-img position-relative overflow-hidden p-5 pe-0">
-                                    <img class="img-fluid w-100" src="img/about.jpg">
+                                <div class="image-area label4">
+                                    <img id="imageResult4" src="~/Images/@Model.Item3.ImagePath" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                                    <input id="upload4" type="file" name="ImageFile" onchange="readURL3(this);" class="w-100">
+
                                 </div>
+
                             </div>
                             <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
                                 <h1 class="display-5 mb-4">Best Organic Fruits And Vegetables</h1>
-                                <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
-                                <p><i class="fa fa-check text-primary me-3"></i>Tempor erat elitr rebum at clita</p>
-                                <p><i class="fa fa-check text-primary me-3"></i>Aliqu diam amet diam et eos</p>
-                                <p><i class="fa fa-check text-primary me-3"></i>Clita duo justo magna dolore erat amet</p>
-                                <a class="btn btn-primary rounded-pill py-3 px-5 mt-3" href="">Read More</a>
+                                <textarea class="mb-3" name="Info" width="300" height="100">
+@Model.Item3.Info
+</textarea>
                             </div>
                         </div>
                     </div>
@@ -79,7 +81,7 @@
                             <h5 class="mb-3">Feature 1</h5>
 
                             <textarea name="OurFeatures1" width="100" height="100">
-@Model.OurFeatures1
+@Model.Item3.OurFeatures1
 </textarea>
 
 
@@ -94,7 +96,7 @@
                             </h4>
                             <h5 class="mb-3">Feature 2</h5>
                             <textarea name="OurFeatures2" width="100" height="100">
-@Model.OurFeatures2
+@Model.Item3.OurFeatures2
 </textarea>
                         </div>
                     </div>
@@ -107,7 +109,7 @@
                             </h4>
                             <h5 class="mb-3">Feature 3</h5>
                             <textarea name="OurFeatures3" width="100" height="100">
-@Model.OurFeatures3
+@Model.Item3.OurFeatures3
 </textarea>
                         </div>
                     </div>
@@ -119,16 +121,18 @@
                 <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
                     <h2 class="display-5 mb-3">Contact Us</h2>
 
-                    <p class="ml-xl-4"><i class="fa fa-map-marker-alt me-3"></i><input type="text" name="Address" value="123 Street, New York, USA" /></p>
-                    <p class="ml-xl-4"><i class="fa fa-phone-alt me-3"></i><input type="tel" name="Phonenumber" value="+012 345 67890" /></p>
-                    <p class="mb-5"><i class="fa fa-envelope me-3"></i><input type="email" name="Email" value="info@example.com" /></p>
+                    <p class="ml-xl-4"><i class="fa fa-map-marker-alt me-3"></i><input type="text" name="Address" value="@Model.Item2.Address" /></p>
+                    <p class="ml-xl-4"><i class="fa fa-phone-alt me-3"></i><input type="tel" name="Phonenumber" value="@Model.Item2.Phonenumber" /></p>
+                    <p class="mb-5"><i class="fa fa-envelope me-3"></i><input type="email" name="Email" value="@Model.Item2.Email" /></p>
                 </div>
 
 
             </div>
         </div>
 
-        <button type="submit">Ok</button>
+        <div class="mr-5">
+            <button type="submit" class="btn btn-primary text-center w-75">Update</button>
+        </div>
     </form>
   
 

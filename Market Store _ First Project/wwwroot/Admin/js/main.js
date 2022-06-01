@@ -305,3 +305,40 @@ function showFileName(event) {
     infoArea.textContent = 'File name: ' + fileName;
 }
 
+
+
+
+/* Slide 5*/
+function readURL3(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#imageResult4')
+                .attr('src', e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+$(function () {
+    $('#upload4').on('change', function () {
+        readURL(input);
+    });
+});
+
+/*  ==========================================
+    SHOW UPLOADED IMAGE NAME
+* ========================================== */
+var input = document.getElementById('upload4');
+var infoArea = document.getElementById('upload4-label');
+
+input.addEventListener('change', showFileName);
+function showFileName(event) {
+    var input = event.srcElement;
+    var fileName = input.files[0].name;
+    infoArea.textContent = 'File name: ' + fileName;
+}
+
+
+

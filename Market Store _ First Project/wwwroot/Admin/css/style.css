@@ -313,6 +313,10 @@
     opacity: 0;
     border: 2px solid #6c63ff !important;
 }
+#upload4 {
+    opacity: 0;
+    border: 2px solid #6c63ff !important;
+}
 
 #upload-label {
     position: absolute;
@@ -345,6 +349,12 @@
     font-weight: bold;
     font-size: 0.8rem;
 }
+.label4::before {
+    content: 'About us';
+    color: #000;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
 .image-area::before {
     text-transform: uppercase;
     position: absolute;
@@ -366,3 +376,7 @@
 * ==========================================
 *
 */
+
+.mr-5 {
+    margin-left: 276px;
+}

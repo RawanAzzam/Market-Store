@@ -1,0 +1,88 @@
+﻿@model Aboutus
+@{ Layout = "~/views/shared/_HomeLayout.cshtml"; }
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">About Us</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">About Us</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- About Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+                <div class="about-img position-relative overflow-hidden p-5 pe-0">
+                    <img class="img-fluid w-100" src="~/Images/@Model.ImagePath">
+                </div>
+            </div>
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                <h1 class="display-5 mb-4">Best Product</h1>
+                <p class="mb-4">
+                    @Model.Info
+                </p>
+                <p><i class="fa fa-check text-primary me-3"></i>Upfront Pricing</p>
+                <p><i class="fa fa-check text-primary me-3"></i> Easy scheduling</p>
+                <p><i class="fa fa-check text-primary me-3"></i> Manufacturing</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- About End -->
+
+<!-- Feature Start -->
+<div class="container-fluid bg-light bg-icon my-5 py-6">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-3">
+                Your everyday, right away
+
+            </h1>
+            <p>  Order Perfume,Clothes and Accessories delivery online from hundreds of Store nearby.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="bg-white text-center h-100 p-4 p-xl-5">
+                    <img class="img-fluid mb-4" src="~/Home/img/Upfront Pricing.png" alt="">
+
+                    <h4 class="mb-3">Upfront Pricing</h4>
+                    <p class="mb-4">
+                        @Model.OurFeatures1
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="bg-white text-center h-100 p-4 p-xl-5">
+                    <img class="img-fluid mb-4" src="~/Home/img/Easy Scheduling.png" alt="">
+                    <h4 class="mb-3">
+                        Easy scheduling
+
+                    </h4>
+                    <p class="mb-4">
+                        @Model.OurFeatures2
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="bg-white text-center h-100 p-4 p-xl-5">
+                    <img class="img-fluid mb-4" src="~/Home/img/Manufacturing.png" alt="">
+                    <h4 class="mb-3">
+                        Manufacturing
+
+                    </h4>
+                    <p class="mb-4">
+                        @Model.OurFeatures3
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Feature End -->

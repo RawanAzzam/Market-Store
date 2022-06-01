@@ -1,0 +1,197 @@
+﻿@model Tuple<Systemuser,UserLogin,IEnumerable<Userorder>>
+@{ Layout = "~/views/shared/_HomeLayout.cshtml"; }
+<style>
+
+    .form-control:focus {
+        box-shadow: none;
+        border-color: #BA68C8;
+    }
+
+    .profile-button {
+        background: #BA68C8;
+        box-shadow: none;
+        border: none;
+    }
+
+        .profile-button:hover {
+            background: #682773;
+        }
+
+        .profile-button:focus {
+            background: #682773;
+            box-shadow: none;
+        }
+
+        .profile-button:active {
+            background: #682773;
+            box-shadow: none;
+        }
+
+    .back:hover {
+        color: #682773;
+        cursor: pointer;
+    }
+
+    .labels {
+        font-size: 11px;
+    }
+
+    .add-experience:hover {
+        background: #BA68C8;
+        color: #fff;
+        cursor: pointer;
+        border: solid 1px #BA68C8;
+    }
+
+        
+
+    #upload-label {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+    }
+
+    .image-area {
+        padding: 1rem;
+        position: relative;
+    }
+
+    .label1::before {
+        content: 'Slider1';
+        color: #000;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+
+    .image-area::before {
+        text-transform: uppercase;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+    }
+
+    .image-area img {
+        z-index: 2;
+        position: relative;
+
+    }
+</style>
+
+<div style="height:150px"></div>
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <div class="image-area rounded-circle mt-4 label1">
+                    <img id="imageResult1" class="rounded-circle mt-5" src="~/Images/@Model.Item1.ImagePath" width="90">
+                    </div>
+                <span class="font-weight-bold">@Model.Item1.Username</span>
+                <span class="text-black-50">@Model.Item1.Email</span>
+                <span>@Model.Item1.Location</span>
+            </div>
+        </div>
+        <div class="col-md-5 border-right">
+            <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+                <input hidden name="Id" value="@Model.Item1.Id" />
+                <input hidden name="ImagePath" value="@Model.Item1.ImagePath" />
+             
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-right">Edit your profile</h6>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <label class="labels">Name</label>
+                            <input type="text" class="form-control" placeholder="Your Name" name="Username"
+                                   value="@Model.Item1.Username">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="labels">Email</label>
+                            <input type="email" name="Email" class="form-control" placeholder="Email" value="@Model.Item1.Email">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Location</label>
+                            <input type="text" class="form-control" name="Location" placeholder="Location" value="@Model.Item1.Location">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12 mb-2">
+                            <label class="labels">Your Photo</label>
+                            <input id="upload1" type="file" name="ImageFile" onchange="readURL(this);" class="w-100">
+
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label class="labels">Password</label>
+                            <input type="password" class="form-control" placeholder="Your Password" name="Passwordd"
+                                   value="@Model.Item2.Passwordd">
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Profile</button></div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center experience">
+                    <span>All Orders Check Out</span>
+                </div>
+                @foreach (var item in Model.Item3)
+                {
+                    <div class="d-flex flex-row mt-3 exp-container">
+                        <div class="work-experience ml-1">
+                            <span class="font-weight-bold d-block">Order Id = @item.Id</span>
+                            <span class="d-block text-black-50 labels">Cost = @item.Cost</span>
+                            <span class="d-block text-black-50 labels">Date Of Order = @item.Dateoforder</span>
+                        </div>
+                    </div>
+                    <hr>
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Slide 1*/
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#imageResult1')
+                    .attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $(function () {
+        $('#upload1').on('change', function () {
+            readURL(input);
+        });
+    });
+
+    /*  ==========================================
+        SHOW UPLOADED IMAGE NAME
+    * ========================================== */
+    var input = document.getElementById('upload1');
+    var infoArea = document.getElementById('upload1-label');
+
+    input.addEventListener('change', showFileName);
+    function showFileName(event) {
+        var input = event.srcElement;
+        var fileName = input.files[0].name;
+        infoArea.textContent = 'File name: ' + fileName;
+
+    }
+</script>

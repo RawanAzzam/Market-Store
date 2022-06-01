@@ -48,6 +48,11 @@ namespace Market_Store___First_Project.Models
             return _context.Store.Count();
         }
 
+        public int GetTotalProduct()
+        {
+            return _context.Product.Count();
+        }
+
         public double GetToadySaleForStore(int storeId)
         {
             var userOrder = _context.Userorder.Where(uo => uo.IsCheckout == true
@@ -75,6 +80,36 @@ namespace Market_Store___First_Project.Models
 
             return total;
         }
+
+        public double GetSaleForPeroidOfTime(DateTime? dateFrom, DateTime? dateTo)
+        {
+            var userOrder = _context.Userorder.Where(uo => uo.IsCheckout == true
+           && uo.Dateoforder.Value.Date >= dateFrom.Value.Date
+                                      && uo.Dateoforder <= dateTo.Value.Date).ToList();
+            var productStore = _context.ProductStore.ToList();
+            var productOrder = _context.Productorder.ToList();
+
+            var q = from uOrder in userOrder
+                    join pOrder in productOrder
+                    on uOrder.Id equals pOrder.Orderid
+                    join pStore in productStore
+                    on pOrder.Productid equals pStore.Id
+                    select new MultiTables
+                    {
+                        userorder = uOrder,
+                        productorder = pOrder,
+                        productStore = pStore
+                    };
+            double total = 0;
+
+            foreach (var item in q)
+            {
+                total += (double)item.userorder.Cost;
+            }
+
+            return total;
+        }
+
         public double GetMonthlySaleForStore(int storeId)
         {
             var userOrder = _context.Userorder.Where(uo => uo.IsCheckout == true
