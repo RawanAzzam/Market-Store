@@ -41,31 +41,43 @@ namespace Market_Store___First_Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (systemuser.ImageFile != null)
+                var userLoginIsFound = _context.UserLogin.Where(ul => ul.UserName == systemuser.Email).SingleOrDefault();
+
+                if(userLoginIsFound != null)
                 {
-                    string wwwRootPath = _webHostEnviroment.WebRootPath;
-                    string fileName = Guid.NewGuid().ToString() + "_" +
-                    systemuser.ImageFile.FileName;
-                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        await systemuser.ImageFile.CopyToAsync(fileStream);
-                    }
-                    systemuser.ImagePath = fileName;
+                    ViewBag.EmailValid = "Email is already Used , try another email";
+                    return View();
                 }
-                _context.Add(systemuser);
-                await _context.SaveChangesAsync();
-                UserLogin userLogin = new UserLogin
+                else
                 {
-                    RoleId = 1,
-                    UserName = systemuser.Email,
-                    Passwordd = password,
-                    UserId = systemuser.Id
-                };
-                _context.Add(userLogin);
-                SendVerfiyCodeEmail(userLogin.UserName);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(VerfiyEmail),new { userId = userLogin.Id});
+                    if (systemuser.ImageFile != null)
+                    {
+                        string wwwRootPath = _webHostEnviroment.WebRootPath;
+                        string fileName = Guid.NewGuid().ToString() + "_" +
+                        systemuser.ImageFile.FileName;
+                        string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await systemuser.ImageFile.CopyToAsync(fileStream);
+                        }
+                        systemuser.ImagePath = fileName;
+                    }
+                    _context.Add(systemuser);
+                    await _context.SaveChangesAsync();
+                    UserLogin userLogin = new UserLogin
+                    {
+                        RoleId = 1,
+                        UserName = systemuser.Email,
+                        Passwordd = password,
+                        UserId = systemuser.Id
+                    };
+                    _context.Add(userLogin);
+                    SendVerfiyCodeEmail(userLogin.UserName);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(VerfiyEmail), new { userId = userLogin.Id });
+                }
+
+               
 
             }
             return View();
@@ -108,6 +120,10 @@ namespace Market_Store___First_Project.Controllers
                         return RedirectToAction("VerfiyEmail", new { userId = userId });
                     }
 
+                }
+                else
+                {
+                    ViewBag.LoginCorrect = "Email or Password is not correct , try again";
                 }
             }
             return View();
