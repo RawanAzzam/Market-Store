@@ -22,6 +22,7 @@ namespace Market_Store___First_Project.Models
         public virtual DbSet<Aboutus> Aboutus { get; set; }
         public virtual DbSet<Card> Card { get; set; }
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<CodeSale> CodeSale { get; set; }
         public virtual DbSet<Contactus> Contactus { get; set; }
         public virtual DbSet<Contactususer> Contactususer { get; set; }
         public virtual DbSet<Home> Home { get; set; }
@@ -128,6 +129,27 @@ namespace Market_Store___First_Project.Models
                     .HasColumnName("IMAGE_PATH")
                     .HasMaxLength(100)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<CodeSale>(entity =>
+            {
+                entity.ToTable("CODESALE");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasColumnType("NUMBER")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.code)
+                    .HasColumnName("CODE")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.sale)
+                    .HasColumnName("SALE")
+                    .HasColumnType("FLOAT");
+
+
             });
 
             modelBuilder.Entity<Contactus>(entity =>

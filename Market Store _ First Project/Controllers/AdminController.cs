@@ -552,7 +552,8 @@ namespace Market_Store___First_Project.Controllers
         #endregion
 
         #region Store
-        public ActionResult Stores(string? categoryName , string? location , int? categoryId)
+        public ActionResult Stores(string categoryName , string location , int? categoryId,string name 
+            , string owner , int? id )
         {
             CheckSession();
             var stores = _context.Store.ToList();
@@ -565,6 +566,23 @@ namespace Market_Store___First_Project.Controllers
             if(categoryId != null){
                 stores = stores.Where(s => s.Category.Id == categoryId).ToList();
             }
+            if(location != null)
+            {
+                stores = stores.Where(s => s.Storelocation == location).ToList();
+            }
+            if(name != null)
+            {
+                stores = stores.Where(s => s.Storename == name).ToList();
+            }
+            if(id != null)
+            {
+                stores = stores.Where(s => s.Id == id).ToList();
+            }
+            if(owner != null)
+            {
+                stores = stores.Where(s => s.Ownername == owner).ToList();
+            }
+
             var multiTables = from s in stores
                               join c in categories on s.Categoryid equals c.Id
                               select new MultiTables
@@ -1181,6 +1199,138 @@ namespace Market_Store___First_Project.Controllers
             }
 
         }
+        #endregion
+
+        #region Manage Code Sale
+
+        public IActionResult CodesSale()
+        {
+            CheckSession();
+            var codes = _context.CodeSale.ToList();
+
+            return View(codes);
+        }
+
+        #region Add Code Sale
+        public IActionResult AddCodeSale()
+        {
+            CheckSession();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddCodeSale([Bind("code","sale")] CodeSale codeSale)
+        {
+            CheckSession();
+            if(ModelState.IsValid)
+            {
+                var codeIsFound = _context.CodeSale.Where(c => c.code == codeSale.code).SingleOrDefault();
+                if(codeIsFound != null)
+                {
+                    ViewBag.CodeIsFound = "This code is already used , try another code";
+                }
+                else {
+                 _context.Add(codeSale);
+                _context.SaveChanges();
+                    return RedirectToAction("CodesSale");
+                }
+
+                
+            }
+            return View();
+
+            
+        }
+
+        #endregion
+
+        #region Edit Code Sale
+        public async Task<IActionResult> EditCodeSale(decimal? id)
+        {
+            CheckSession();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var code = await _context.CodeSale.FindAsync(id);
+            if (code == null)
+            {
+                return NotFound();
+            }
+            return View(code);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCodeSale(decimal id, [Bind("Id","code", "sale")] CodeSale codeSale)
+        {
+            CheckSession();
+            if (id != codeSale.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                   
+                    _context.Update(codeSale);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductExists(codeSale.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(CodesSale));
+            }
+            return View(codeSale);
+        }
+        #endregion
+
+        #region Delete Code Sale
+        public async Task<IActionResult> DeleteCodeSale(decimal? id)
+        {
+            CheckSession();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var code = await _context.CodeSale
+                  .FirstOrDefaultAsync(m => m.Id == id);
+            if (code == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _context.CodeSale.Remove(code);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(CodesSale));
+            }
+
+        }
+        #endregion
+        #endregion
+
+        #region 
+        public IActionResult ProductCategory()
+        {
+            var productCategory = _context.ProductCategory.ToList();
+            return View(productCategory);
+        }
+
+
         #endregion
         public IActionResult Logout()
         {

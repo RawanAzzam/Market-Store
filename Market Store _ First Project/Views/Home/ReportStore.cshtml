@@ -14,6 +14,7 @@
             </div>
             <div class="col-lg-7 col-md-12 wow fadeInUp pt-xxl-5" data-wow-delay="0.5s">
                 <form method="post" asp-action="ReportStore">
+                    <input hidden type="number" value="@Model.Id" class="form-control" name="storeId">
                     <div class="row g-3">
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label">Store Id</label>
@@ -22,7 +23,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label">User Id</label>
+                            <label class="col-sm-2 col-form-label">Store Name</label>
                             <div class="col-sm-10">
                                 <input disabled type="text" class="form-control" value="@Model.Storename">
                             </div>

@@ -18,7 +18,7 @@ namespace Market_Store___First_Project.Models
         public double GetTodaySale()
         {
             var userOrder = _context.Userorder.Where(uo => uo.IsCheckout == true
-            && uo.Dateoforder.Value.TimeOfDay == DateTime.Now.TimeOfDay);
+            && uo.Dateoforder.Value.Date == DateTime.Now.Date);
 
             if (userOrder.Count() == 0)
                 return 0;

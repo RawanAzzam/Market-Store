@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Market_Store___First_Project.Models.ProductCategory>
+
+@{ ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/AdminLayout.cshtml"; }
+
+<h1 class="pt-4 text-center">Manage Product Category</h1>
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h4 class="mb-0 text-center"><a asp-action="CreateUser"> CreateUser</a></h4>
+                </div>
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Category Id</th>
+                            <th scope="col">Photo</th>
+                            <th scope="col">Category name</th>
+                            <th scope="col"></th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+            <tr>
+                <th scope="row">@item.Id</th>
+                <td>
+                    <img class="rounded-circle" src="~/Images/@item.ImagePath" alt="" style="width: 40px; height: 40px;">
+                </td>
+                <td>@item.Name</td>
+                 <td>
+                    <a asp-action="EditUser" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="DeleteUser" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+}
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+<script>$(document).ready(function () {
+        $('.table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'pdfHtml5'
+            ]
+        });
+    });</script>
+

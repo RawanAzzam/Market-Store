@@ -64,10 +64,17 @@
                     </div>
                     <a asp-action="Users" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Manage Users</a>
                     <a asp-action="Categories" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Manage Category </a>
-                    <a asp-action="Stores" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Manage Store</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Store</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a asp-action="Stores" class="dropdown-item">Manage Store</a>
+                            <a asp-action="ViewReport" class="dropdown-item">View Report Store</a>
+                        </div>
+                    </div>
                     <a asp-action="Products" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Manage Product</a>
+                    <a asp-action="CodesSale" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Manage Code Sale</a>
 
-                   
+
                 </div>
             </nav>
         </div>

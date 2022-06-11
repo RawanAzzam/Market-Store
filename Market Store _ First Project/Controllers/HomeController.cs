@@ -37,7 +37,13 @@ namespace Market_Store___First_Project.Controllers
             {
                 ViewBag.isLogin = true;
                 id = (int) HttpContext.Session.GetInt32("UserId");
+
+               
             }
+            var contact = _context.Contactus.Where(c => c.Id == 1).SingleOrDefault();
+            ViewBag.Address = contact.Address;
+            ViewBag.PhoneNumber = contact.Phonenumber;
+            ViewBag.Email = contact.Email;
         }
         public IActionResult Index()
         {
@@ -92,10 +98,7 @@ namespace Market_Store___First_Project.Controllers
             CheckSession();
             if (HttpContext.Session.GetInt32("UserId") != null)
             {
-                var reportIsFound = _context.Report.Where(t => t.Userid == id).SingleOrDefault();
-
-                if (reportIsFound == null)
-                {
+                
                     Report report = new Report
                     {
                         Mesaage = message,
@@ -104,13 +107,7 @@ namespace Market_Store___First_Project.Controllers
                     };
                     _context.Add(report);
                     _context.SaveChanges();
-                }
-                else
-                {
-                    reportIsFound.Mesaage = message;
-                    _context.Update(reportIsFound);
-                    _context.SaveChanges();
-                }
+               
 
                 return RedirectToAction("Store");
             }
@@ -253,7 +250,7 @@ namespace Market_Store___First_Project.Controllers
         }
 
         //////////////////////////////// View Cart  //////////////////////////////////
-        public IActionResult Cart(string msg)
+        public IActionResult Cart(string msg,string code)
         {
             CheckSession();
             if (HttpContext.Session.GetInt32("UserId") != null)
@@ -285,6 +282,13 @@ namespace Market_Store___First_Project.Controllers
                     foreach (var item in q)
                     {
                         totalCost += (int)(item.product.Sale * item.productorder.Quntity);
+                    }
+                    if(code != null)
+                    {
+                        var sale = _context.CodeSale.Where(cs => cs.code == code).SingleOrDefault();
+
+                        totalCost = (int)(totalCost - totalCost * sale.sale);
+                        ViewBag.CodeSale = sale.sale;
                     }
                     lastOrder.Cost = totalCost;
                     _context.Update(lastOrder);
@@ -444,8 +448,9 @@ namespace Market_Store___First_Project.Controllers
             {
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
-                    smtp.Credentials = new NetworkCredential("rawanazzam68@gmail.com", "Rram1210.");
                     smtp.EnableSsl = true;
+                    smtp.Credentials = new NetworkCredential("rawanazzam68@gmail.com", "ovykhzklaqndpgee");
+                  
                     smtp.Send(message);
                 }
             }
